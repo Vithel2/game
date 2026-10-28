@@ -1,0 +1,30 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {resolve,extname} from 'node:path';
+const root=resolve('.');
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png'};
+const server=createServer(async(req,res)=>{try{const p=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(p!==root&&!p.startsWith(root+'/')){res.writeHead(403);res.end();return}const file=p===root?resolve(root,'index.html'):p;res.setHeader('Content-Type',types[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.writeHead(404);res.end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const url='http://127.0.0.1:'+server.address().port+'/';
+let browser;
+(async()=>{const b=await chromium.launch({headless:true,executablePath:process.env.BROWSER_BIN||undefined,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});browser=b;const p=await b.newPage({viewport:{width:1440,height:900}});const errors=[];p.on('pageerror',e=>{errors.push(e.message);console.log('ERROR',e.message)});p.setDefaultTimeout(30000);
+async function click(s){await p.locator(s).first().click();await p.waitForTimeout(110)}
+async function stage(s){await p.waitForFunction(s=>window.__game.stage===s,s);console.log('STAGE',s)}
+await p.goto(url);await p.waitForFunction(()=>window.__game?.ready,null,{timeout:60000});await click('[data-action="start"]');
+await click('#dock [data-action="phone"]');await click('[data-action="tab"][data-tab="avitu"]');await click('[data-action="meet"][data-id="1-a"]');await click('.hotspot[data-action="seller"]');await click('[data-action="inspect"]');await click('[data-action="buy"]');
+assert.equal(await p.evaluate(()=>__game.state.money),2650);console.log('BOUGHT');
+await click('[data-action="goHome"]');await click('#dock [data-action="bench"]');await click('[data-action="repairPhone"]');await stage('diagnose');await p.waitForTimeout(700);await click('.hotspot[data-action="diagnose"]');await stage('screws');
+await click('.hotspot[data-action="screw"]');assert.equal(await p.evaluate(()=>__game.state.phones[0].out),0);
+await click('[data-action="tool"][data-tool="driver"]');for(let i=0;i<8;i++)await click('.hotspot[data-action="screw"]');await stage('open');
+await click('[data-action="tool"][data-tool="suction"]');await click('.hotspot[data-action="open"]');await stage('disconnect');
+await click('[data-action="tool"][data-tool="spudger"]');for(let i=0;i<3;i++)await click('.hotspot[data-action="connector"]');await stage('remove');
+await p.screenshot({path:'/tmp/sruk_repair.png'});await click('[data-action="tool"][data-tool="hand"]');await click('.hotspot[data-action="remove"]');await stage('install');
+await click('.hotspot[data-action="install"]');await click('[data-action="order"][data-id="battery"]');assert.equal(await p.evaluate(()=>__game.state.money),1930);assert.equal(await p.evaluate(()=>__game.state.orders[0].ready),2);
+await click('.modal-close');await click('[data-action="leaveRepair"]');await click('.hotspot[data-action="bed"]');await click('[data-action="sleep"]');await p.waitForTimeout(1600);
+assert.equal(await p.evaluate(()=>__game.state.day),2);await click('[data-action="goStreet"]');await p.waitForTimeout(900);await p.screenshot({path:'/tmp/sruk_street.png'});await click('.hotspot[data-action="pickup"]');await p.waitForTimeout(4500);console.log('PICKUP',await p.evaluate(()=>({state:__game.state.orders,moving:__game.moving,pos:__game.position,modal:document.querySelector('.modal')?.textContent})));await p.screenshot({path:'/tmp/sruk_pickup.png'});await click('[data-action="collect"]');assert.equal(await p.evaluate(()=>__game.state.parts.battery),1);assert.equal(await p.locator('[data-action="collect"]').count(),0);
+await click('.modal-close');await click('[data-action="goHome"]');await click('#dock [data-action="bench"]');await click('[data-action="repairPhone"]');await stage('install');await click('.hotspot[data-action="install"]');assert.equal(await p.evaluate(()=>__game.state.parts.battery),0);await stage('connect');await click('[data-action="tool"][data-tool="spudger"]');for(let i=0;i<3;i++)await click('.hotspot[data-action="connector"]');await stage('close');await click('[data-action="tool"][data-tool="hand"]');await click('.hotspot[data-action="close"]');await stage('tighten');await click('[data-action="tool"][data-tool="driver"]');for(let i=0;i<8;i++)await click('.hotspot[data-action="screw"]');await stage('test');await click('.hotspot[data-action="test"]');await click('[data-action="sell"]');await click('[data-action="confirmSale"]');
+assert.equal(await p.evaluate(()=>__game.state.sold),1);assert.equal(await p.evaluate(()=>__game.state.money),5180);assert.equal(await p.evaluate(()=>__game.state.reputation),53);console.log('SOLD OK');
+await p.reload();await p.waitForFunction(()=>window.__game?.ready,null,{timeout:60000});assert.equal(await p.evaluate(()=>__game.state.sold),1);assert.equal(await p.evaluate(()=>__game.state.money),5180);assert.deepEqual(errors,[]);console.log('PASS: full first purchase, diagnosis, tool gates, 8 screws, 3 connectors, removal, order, sleep, physical pickup, install, reassembly, testing, sale and save');await b.close();server.close();
+})().catch(async e=>{console.error(e);if(browser)await browser.close();server.close();process.exitCode=1});
