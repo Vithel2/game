@@ -4,7 +4,7 @@ export const QUESTS=[
  {id:'first-buy',title:'Моя первая сделка',who:'Лев · сосед-мастер',text:'Осмотри телефон на встрече и купи свой первый аппарат для восстановления.',reward:150,ready:s=>s.phones.some(p=>!p.client)&&s.stats.inspections>0},
  {id:'parcel',title:'Детали сами не приедут',who:'Маша · Azon',text:'Закажи запчасть и получи её внутри пункта выдачи.',reward:180,ready:s=>s.stats.collected>0},
  {id:'first-sale',title:'Вторая жизнь',who:'Лев · сосед-мастер',text:'Полностью восстанови и продай первый телефон.',reward:300,ready:s=>s.sold>=1},
- {id:'lunch',title:'Обед по расписанию',who:'Тамара · Пятак',text:'Зайди внутрь магазина и купи горячий перекус на кассе.',reward:100,ready:s=>s.stats.groceryVisits>0&&s.stats.foodBuys>0},
+ {id:'lunch',title:'Обед по расписанию',who:'Тамара · Пятак',text:'Возьми корзину, выбери продукты на полках и оплати покупки у Тамары.',reward:100,ready:s=>s.stats.groceryVisits>0&&s.stats.foodBuys>0},
  {id:'workbench',title:'Рабочее место решает',who:'Лев · сосед-мастер',text:'Улучши ремонтный стол через инвентарь.',reward:250,ready:s=>s.upgrade},
  {id:'computer',title:'Не только телефоны',who:'Маша · Azon',text:'Купи комплект ПК и поставь его дома.',reward:250,ready:s=>s.pc.owned},
  {id:'ram',title:'Памяти много не бывает',who:'Денис · любитель железа',text:'Установи в свой ПК первый комплект оперативной памяти.',reward:200,ready:s=>s.pc.ram>=1},
@@ -14,6 +14,10 @@ export const QUESTS=[
  {id:'donor-repair',title:'Донор спас положение',who:'Лев · сосед-мастер',text:'Восстанови телефон с разбитым дисплеем. В Azon дисплеев нет — придётся найти донора.',reward:500,ready:s=>s.phones.some(p=>p.sold&&p.defect==='display')},
  {id:'master',title:'У района появился мастер',who:'Жители района',text:'Продай три восстановленных телефона и заслужи репутацию надёжного продавца.',reward:700,ready:s=>s.sold>=3&&s.reputation>=59},
  {id:'neighbor',title:'Соседи советуют соседям',who:'Жители района',text:'Верни жителю района его отремонтированный телефон.',reward:250,ready:s=>s.stats.jobsCompleted>0},
+ {id:'first-vlog',title:'Возвращение в кадр',who:'Лиза · автор Youpube',text:'Сними и опубликуй первый влог в приложении Youpube.',reward:200,ready:s=>s.vlog.posts.length>0},
+ {id:'local-friends',title:'Район — это люди',who:'Лев · сосед-мастер',text:'Познакомься со всеми тремя друзьями: Львом, Денисом и Лизой.',reward:250,ready:s=>Object.values(s.friends).every(n=>n>0)},
+ {id:'gadget-repair',title:'В мастерской не только телефоны',who:'Денис · любитель железа',text:'Восстанови и продай геймпад, колонку или наушники с Авиту.',reward:350,ready:s=>s.phones.some(p=>p.kind&&p.kind!=='phone'&&p.fixed&&p.sold&&!p.client)},
+ {id:'channel-income',title:'Творчество кормит',who:'Лиза · автор Youpube',text:'Подключи монетизацию: нужны 500 подписчиков и три публикации.',reward:500,ready:s=>s.vlog.monetized},
 ];
 export const JOBS=[
  {id:'tamara',name:'Тамара',title:'Касса без связи',text:'Мой личный телефон выключается без зарядки. После смены хочу позвонить дочке — выручишь?',defect:'battery',location:'grocery',pay:1500,bonus:250,days:3},

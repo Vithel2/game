@@ -23,12 +23,13 @@ let browser;
  async function tool(id){await click(`[data-action="tool"][data-tool="${id}"]`)}
  async function toInstall(){await click('.hotspot[data-action="diagnose"]');await stage('screws');await tool('driver');for(let i=0;i<8;i++)await click('.hotspot[data-action="screw"]');await tool('suction');await click('.hotspot[data-action="open"]');await tool('spudger');for(let i=0;i<3;i++)await click('.hotspot[data-action="connector"]');await tool('hand');await click('.hotspot[data-action="remove"]');await stage('install')}
  async function assemble(){await tool('hand');await click('.hotspot[data-action="install"]');await stage('connect');await tool('spudger');for(let i=0;i<3;i++)await click('.hotspot[data-action="connector"]');await tool('hand');await click('.hotspot[data-action="close"]');await tool('driver');for(let i=0;i<8;i++)await click('.hotspot[data-action="screw"]');await click('.hotspot[data-action="test"]')}
+ await p.addInitScript(()=>!localStorage.getItem('s-ruk-game-v3')&&localStorage.setItem('s-ruk-game-v3',JSON.stringify({version:5,profile:{created:true,name:'ТестКлиент',gender:'male',perk:'maker'},training:{complete:true}})));
  await p.goto(url);await p.waitForFunction(()=>window.__game?.ready,null,{timeout:90000});await p.evaluate(()=>document.fonts.ready);
  assert.equal(await p.evaluate(()=>document.fonts.check('14px Nunito')),true);assert.equal(await p.evaluate(()=>document.fonts.check('14px "Russo One"')),true);
- await click('[data-action="start"]');for(let i=0;i<3;i++)await click('[data-action="tutorialNext"]');assert.equal((await state()).tutorial.intro,true);await click('[data-action="hideTutorial"]');
+ await click('[data-action="start"]');
  await click('#dock [data-action="goStreet"]');await mode('street');await p.waitForTimeout(1200);await p.screenshot({path:'/tmp/sruk_update_exterior.png'});
  await click('.hotspot[data-action="grocery"]');await mode('grocery');await p.waitForTimeout(900);await p.screenshot({path:'/tmp/sruk_update_store.png'});
- await click('#dock [data-action="shopCounter"]');await click('[data-action="foodBuy"]');assert.equal((await state()).money,3380);assert.equal((await state()).stats.groceryVisits,1);
+ await click('[data-action="takeBasket"]');await click('[data-action="addFood"][data-food="sandwich"]');await p.waitForFunction(()=>!__game.busy&&!__game.moving);await click('#dock [data-action="shopCounter"]');await click('[data-action="checkout"]');assert.equal((await state()).money,3380);assert.equal((await state()).stats.groceryVisits,1);
  await claim('lunch');await claim('daily-1-food');assert.equal((await state()).money,3540);
  await journal();assert.equal(await p.locator('[data-action="claimQuest"][data-id="lunch"]').isDisabled(),true);assert.equal(await p.locator('[data-action="claimQuest"][data-id="first-sale"]').isDisabled(),true);
  await click('[data-action="acceptJob"][data-id="tamara"]');assert.equal((await state()).contracts.length,1);assert.equal((await state()).phones[0].client,'tamara');assert.equal(await p.locator('[data-action="acceptJob"][data-id="masha"]').isDisabled(),true);await close();
@@ -36,7 +37,7 @@ let browser;
  await click('.hotspot[data-action="pcMarket"]');await click('[data-action="buyPc"]');assert.equal((await state()).pc.owned,true);assert.equal((await state()).money,1340);await claim('computer');assert.equal((await state()).money,1590);
  console.log('PASS: intro, fonts, interiors, food, quest guards, commission acceptance, PC purchase');
  await home();await click('#dock [data-action="bench"]');await click('[data-action="repairPhone"]');await toInstall();
- await click('.hotspot[data-action="install"]');await click('[data-action="order"][data-id="battery"]');assert.equal((await state()).money,870);await close();await click('[data-action="leaveRepair"]');await click('.hotspot[data-action="bed"]');await click('[data-action="sleep"]');await p.waitForTimeout(1600);
+ await click('.hotspot[data-action="install"]');await click('[data-action="order"][data-id="battery"]');assert.equal((await state()).money,870);await close();await click('[data-action="leaveRepair"]');await click('.hotspot[data-action="bed"]');await click('[data-action="sleep"]');await p.waitForFunction(()=>__game.state.day===2&&!__game.busy);
  await click('#dock [data-action="goStreet"]');await mode('street');await click('.hotspot[data-action="pickup"]');await mode('pickup');await click('#dock [data-action="pickupCounter"]');await click('[data-action="collect"]');await home();
  await click('#dock [data-action="bench"]');await click('[data-action="repairPhone"]');await stage('install');await assemble();
  await p.waitForSelector('[data-action="returnClient"]');assert.equal(await p.locator('[data-action="sell"]').count(),0);await click('[data-action="returnClient"]');await mode('grocery');await click('#dock [data-action="shopCounter"]');

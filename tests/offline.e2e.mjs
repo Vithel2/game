@@ -1,0 +1,14 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {resolve,extname} from 'node:path';
+const root=resolve('/tmp/s-ruk-offline-check');
+const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png'};
+const server=createServer(async(req,res)=>{try{const p=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(p!==root&&!p.startsWith(root+'/')){res.writeHead(403);res.end();return}const file=p===root?resolve(root,'index.html'):p;res.setHeader('Content-Type',types[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.writeHead(404);res.end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const url='http://127.0.0.1:'+server.address().port+'/';
+let browser;
+(async()=>{browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_BIN||undefined,args:['--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader']});const p=await browser.newPage({viewport:{width:800,height:700}}),external=[],errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('request',r=>{if(/^https?:/.test(r.url())&&r.url()!==url)external.push(r.url())});
+ await p.goto(url);await p.waitForFunction(()=>window.__game?.ready,null,{timeout:90000});await p.evaluate(()=>document.fonts.ready);assert.equal(await p.evaluate(()=>document.fonts.check('14px Nunito')),true);await p.locator('[data-action="start"]').click();assert.equal(await p.locator('[data-action="storyNext"]').count(),1);assert.deepEqual(external,[]);assert.deepEqual(errors,[]);console.log('PASS: single HTML starts with embedded models, fonts and audio; no external requests',await p.evaluate(()=>__game.renderInfo));await browser.close();server.close();
+})().catch(async e=>{console.error(e);if(browser)await browser.close();server.close();process.exitCode=1});

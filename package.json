@@ -1,6 +1,6 @@
 {
   "name": "s-ruk-game",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,13 @@
     "test:mobile": "node tests/mobile.e2e.mjs",
     "package:offline": "npm run build && python3 tools/package_game.py",
     "test:expansion": "node tests/expansion.e2e.mjs",
-    "test:state": "node tests/migration.test.mjs"
+    "test:state": "node tests/migration.test.mjs",
+    "test:rework": "node tests/rework.e2e.mjs",
+    "test:navigation": "node tests/navigation.test.mjs",
+    "test:gadgets": "node tests/gadgets.e2e.mjs",
+    "test:life": "node tests/life.test.mjs",
+    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/s-ruk-playable-0.4.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
+    "test:resume": "node tests/resume.e2e.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

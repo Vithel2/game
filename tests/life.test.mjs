@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {fresh} from '../game/state.js';
+import {publishVlog,rivals,training} from '../game/life.js';
+import {Features} from '../game/features.js';
+const s=fresh();s.profile.created=true;const f=new Features({state:()=>s,world:()=>({}),toast:()=>{}});
+assert.equal(f.allowed('start'),true,'an unfinished tutorial must allow Continue');assert.equal(f.allowed('quests'),false,'the first lesson stays mandatory');s.training.moved=true;s.training.phone=true;s.training.market=true;s.training.meeting=true;assert.equal(training(s).id,'seller');assert.equal(f.allowed('meet'),true,'a lost appointment can be booked again');
+const a=publishVlog(s,'story');assert.ok(a.subs>0);assert.equal(publishVlog(s,'story'),null,'only one published vlog per day');assert.equal(publishVlog(s,'pc'),null,'a PC vlog needs an owned PC');const previous=rivals(s);s.day++;s.pc.owned=true;s.vlog.monetized=true;const money=s.money;const post=publishVlog(s,'pc');assert.ok(post.earnings>0);assert.equal(s.money,money+post.earnings);assert.ok(rivals(s).every((r,i)=>r.subs>previous[i].subs));
+const base=fresh(),charm=fresh();charm.profile.perk='charm';assert.ok(publishVlog(charm,'story').subs>publishVlog(base,'story').subs);
+s.sold=1;assert.equal(training(s).id,'done');assert.equal(f.allowed('finishTraining'),true);s.training.complete=true;assert.equal(training(s),null);assert.equal(f.allowed('quests'),true);
+console.log('PASS: tutorial resume and gates, vlog daily/ownership guards, revenue, charm perk, rival growth');
