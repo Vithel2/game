@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="com.vithel.perekup" version="0.8.0" android-versionCode="800" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Перекуп: второй шанс</name>
+  <description>Офлайн-симулятор перекупа и ремонта техники.</description>
+  <author>Vithel</author>
+  <content src="index.html" />
+  <preference name="Fullscreen" value="true" />
+  <preference name="Orientation" value="default" />
+  <preference name="DisallowOverscroll" value="true" />
+  <preference name="BackgroundColor" value="0xffc8d9d4" />
+  <preference name="AndroidWindowSplashScreenBackground" value="#c8d9d4" />
+  <preference name="AndroidWindowSplashScreenAnimatedIcon" value="res/icon.png" />
+  <preference name="android-minSdkVersion" value="26" />
+  <preference name="android-targetSdkVersion" value="35" />
+  <preference name="AndroidInsecureFileModeEnabled" value="false" />
+  <platform name="android">
+    <icon src="res/icon.png" />
+  </platform>
+</widget>

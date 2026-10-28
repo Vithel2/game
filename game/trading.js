@@ -17,5 +17,5 @@ export function completeDeal(s,id){
  p.sold=true;d.status='complete';d.day=s.day;p.soldDay=s.day;s.money+=d.price;s.sold++;s.daily.sold++;
  s.profit+=d.price-p.cost-(p.requiredParts||[p.primaryDefect||p.defect]).reduce((sum,k)=>sum+(PARTS[k]?.price||0),0);s.reputation=Math.min(100,s.reputation+3);
  const stars=s.day>d.due?4:5,review={id:d.id,name:d.name,stars,day:s.day,text:stars===5?'Всё как в объявлении. Ремонт указан, аппарат проверен.':'Техника работает. Передачу пришлось подождать.'};s.market.reviews.unshift(review);
- s.market.history.unshift({id:d.id,phone:p.id,name:p.name||'R / 01',kind:p.kind||'phone',price:d.price,day:s.day,method:d.method,buyer:d.name,stars});s.market.history=s.market.history.slice(0,3);return d;
+ s.market.history.unshift({id:d.id,phone:p.id,name:p.name||'Aster 13 mini',kind:p.kind||'phone',price:d.price,day:s.day,method:d.method,buyer:d.name,stars});s.market.history=s.market.history.slice(0,3);return d;
 }

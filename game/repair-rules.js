@@ -16,9 +16,9 @@ export function stageFor(p){
  if(!p.installed)return 'install';
  if(p.difficulty==='expert'&&!p.soldered)return 'solder';
  if((p.connected||0)!==connectorMask(p))return 'connect';
+ if((p.inside||0)!==screwMask(p))return 'tighten';
  if(complicated(p)&&!p.sealed)return 'seal';
  if(!p.closed)return 'close';
- if((p.inside||0)!==screwMask(p))return 'tighten';
  if(complicated(p)&&!p.calibrated)return 'calibrate';
  if(!p.fixed)return 'test';
  return 'done';

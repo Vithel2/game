@@ -6,6 +6,7 @@ import {workshopTool,deviceCase} from './workshop-models.js';
 import {installRepairMotion} from './repair-motion.js';
 import {meshBounds} from './motion.js';
 import {buildHandset,visibleDriver} from './repair-phone.js';
+import {installDiagnostic} from './diagnostics.js';
 
 export function installRepair(w){
  const configs={phone:buildHandset(w)};visibleDriver(w);
@@ -16,6 +17,7 @@ export function installRepair(w){
  w.inventoryParts=newParts;w.repairBusy=false;w.precise=null;w.repairConfigs=configs;
  const generic=kind=>deviceCase(w,kind);
  function activate(p){const kind=p.kind||'phone';if(!configs[kind])configs[kind]=generic(kind);for(const [key,c]of Object.entries(configs))c.root.visible=key===kind;const c=configs[kind];if(!c.connectors){c.connectors=[];for(let i=0;i<3;i++){const o=w.box(.009,.004,.008,'#3b4a4e');o.position.copy(c.connectorPositions?.[i]||new T.Vector3(-.025+i*.025,.032,.044));if(kind==='headphones')o.scale.setScalar(.55);c.root.add(o);c.connectors.push(o)}c.flexes=[];for(let i=0;i<2;i++){const geo=new T.BufferGeometry();geo.setAttribute('position',new T.BufferAttribute(new Float32Array(13*2*3),3));const indices=[];for(let j=0;j<12;j++)indices.push(j*2,j*2+1,j*2+2,j*2+1,j*2+3,j*2+2);geo.setIndex(indices);const mesh=new T.Mesh(geo,new T.MeshStandardMaterial({color:'#ca9345',roughness:.45,metalness:.25,side:T.DoubleSide}));c.root.add(mesh);c.flexes.push(mesh)}}Object.assign(w,{phone:c.root,display:c.display,battery:c.battery,charge:c.charge,oled:c.oled,screws:c.screws});w.activeRepair=c;
+  if(kind==='phone')installDiagnostic(w,c);
   if(w.stockKind!==kind){
    w.stockKind=kind;
    for(const [key,source]of Object.entries({battery:c.battery,charge:c.charge,display:c.display})){
@@ -27,7 +29,7 @@ export function installRepair(w){
  function pose(p){const c=w.activeRepair;if(!p.open||p.closed)return {pos:c.hinge.clone().sub(c.pivot),q:new T.Quaternion()};if(p.disconnected===connectorMask(p)&&!['connect','seal','close','tighten','calibrate','test','done'].includes(repairStage(p))){const pos=c.park.clone(),oldPos=c.display.position.clone(),oldQ=c.display.quaternion.clone();c.display.position.copy(pos);c.display.quaternion.identity();const b=meshBounds(c.display);pos.y+=(.028-b.min.y)/c.root.scale.y;c.display.position.copy(oldPos);c.display.quaternion.copy(oldQ);c.display.updateWorldMatrix(true,true);return {pos,q:new T.Quaternion()};}const q=new T.Quaternion().setFromAxisAngle(new T.Vector3(0,0,1),1.0);return {pos:c.hinge.clone().sub(c.pivot.clone().applyQuaternion(q)),q};}
  w.showRepair=p=>{w.discarded.clear();activate(p);w.mode='repair';w.avatarGoal=null;w.waypoints=[];w.targetFocus.set(-.1,.42,0);w.targetView=5.9;w.repairId=p.id;w.repairPhone=p;w.updateRepair(p,true);w.resize()};
  w.updateRepair=(p,instant=false)=>{
-  if(w.repairId!==p.id){activate(p);w.repairId=p.id;instant=true}w.stage=repairStage(p);w.repairPhone=p;const c=w.activeRepair;const t=pose(p);c.display.userData.pose=t;if(instant){c.display.position.copy(t.pos);c.display.quaternion.copy(t.q)}
+  if(w.repairId!==p.id){activate(p);w.repairId=p.id;instant=true}w.stage=repairStage(p);w.repairPhone=p;const c=w.activeRepair;const t=pose(p);c.display.userData.pose=t;if(c.diagnostic&&!w.precise)c.diagnostic.screen.visible=p.fixed||w.stage==='test';if(instant){c.display.position.copy(t.pos);c.display.quaternion.copy(t.q)}
   c.display.visible=!(p.defect==='display'&&p.removed&&!p.installed);c.battery.visible=!(p.defect==='battery'&&p.removed&&!p.installed);c.charge.visible=!(p.defect==='charge'&&p.removed&&!p.installed);
   if(c.oled)c.oled.material.color.set(p.fixed?'#7dc7a3':'#17313b');
   c.screws.forEach((s,i)=>{const removed=(p.out&(1<<i))&&!(p.inside&(1<<i)),phone=!p.kind||p.kind==='phone';const target=removed?new T.Vector3(.135+(i%2)*.020,.010,-.04+Math.floor(i/2)*.028):new T.Vector3(i%2?(phone?.031:.062):(phone?-.031:-.062),phone?.036:.075,phone?-.063+Math.floor(i/2)*.042:(i<2?-.037:.037));s.userData.target=target;if(instant)s.position.copy(target)});

@@ -18,7 +18,7 @@ export class MediaStudio{
   if(action==='videoLens'){if(s.vlog.production)s.vlog.production.lens=id;this.persist();return true}
   if(action==='videoCapture'){
    const a=s.vlog.production;if(!a||a.status!=='shoot'||a.clips.length>=3)return true;const beat=BEATS[a.clips.length],timing=1-Math.abs(this.needle-.5)*2,quality=.45+timing*.35+(a.lens===beat.lens?.20:0);
-   this.close();w.performLife('record',()=>{a.clips.push({beat:a.clips.length,quality,lens:a.lens});this.phase=0;if(a.clips.length===3)a.status='edit';this.open(a.status==='edit'?'videoEdit':'videoShoot');this.persist()},'phone',{duration:1.65});return true;
+   this.close();w.seated=false;w.performLife('record',()=>{a.clips.push({beat:a.clips.length,quality,lens:a.lens});this.phase=0;if(a.clips.length===3)a.status='edit';this.open(a.status==='edit'?'videoEdit':'videoShoot');this.persist()},'phone',{duration:4.8,beat:a.clips.length,lens:a.lens});return true;
   }
   if(action==='retakeClip'){const a=s.vlog.production;if(!a||!a.clips.length)return true;a.clips.pop();a.status='shoot';this.open('videoShoot');this.persist();return true}
   if(action==='editStyle'){if(s.vlog.production)s.vlog.production.edit=id;this.persist();return true}

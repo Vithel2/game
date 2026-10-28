@@ -1,6 +1,7 @@
 import {CHAPTERS,chapterStatus,claimChapter,advanceTime,startShift,answerShift,wageFor,claimWage,seasonFor,skyPhase} from './progression.js';
 import {money} from './state.js';
 import {FOOD} from './products.js';
+import {presentedHit} from './precision.js';
 const LABELS={battery:'Аккумулятор',charge:'Шлейф зарядки',ram:'Память',gpu:'Видеокарта',ssd:'SSD',phone:'Телефон'};
 const itemName=id=>FOOD[id]?.name||LABELS[id]||id;
 export class Expansion{
@@ -39,14 +40,14 @@ export class Expansion{
   if(action==='claimWage'){const wage=claimWage(s);if(wage!==null){this.tick(75,12);this.audio.play('coin');this.persist();this.toast('За смену: '+money(wage))}return true}
   if(action==='skillHit'){
    const a=this.skill;if(!a)return true;const p=this.phone();if(!p)return true;
-   if(Math.abs(a.needle-a.target)>a.width/2){s.energy=Math.max(0,s.energy-1);this.audio.play('error');this.toast('Чуть точнее: нажми, когда отметка в зелёной зоне.');return true}
+   if(!presentedHit()){s.energy=Math.max(0,s.energy-1);this.audio.play('error');this.toast('Чуть точнее: нажми, когда отметка в зелёной зоне.');return true}
    a.hits++;p.skillScores||={};p.skillScores[a.action]=a.hits;this.audio.play('scan');
    if(a.hits>=3){this.close();this.skill=null;w.performRepair(a.action,0,()=>this.completeRepair(a.action,0));}else{a.target=[.34,.67,.46][a.hits];this.persist()}return true;
   }
   return false;
  }
  approachWork(place,done){const w=this.world(),target=place==='grocery'?[-2.16,.23,-.10]:[-.95,.23,-.05];const inside=()=>{w.staffWorking=true;w.walkTo(target,()=>{w.avatar.rotation.y=0;done()})};if(w.mode===place){inside();return}const outside=()=>w.walkTo(place==='grocery'?[6.59,.05,1.65]:[12.22,.05,1.65],async()=>{await w.transitionTo(place);this.persist();inside()});if(w.mode==='street')outside();else w.transitionTo('street').then(outside);}
- beginSkill(action){const p=this.phone();this.skill={action,hits:Math.min(2,p.skillScores?.[action]||0),needle:.5,target:.34,width:p.difficulty==='expert'?.19:.29,time:0};this.skill.target=[.34,.67,.46][this.skill.hits];this.open('repairSkill');}
+ beginSkill(action){const p=this.phone();this.skill={action,hits:Math.min(2,p.skillScores?.[action]||0),needle:.5,target:.34,width:p.difficulty==='expert'?.24:.34,time:0};this.skill.target=[.34,.67,.46][this.skill.hits];this.open('repairSkill');}
  render(modal){const s=this.state(),b=this.button;
   if(modal==='quests'){
    const tabs=`<nav class="journal-tabs">${[['story','История'],['goals','Задания'],['jobs','Работа']].map(([id,label])=>b('journalTab',label,this.journalTab===id?'mint':'',`data-id="${id}"`)).join('')}</nav>`;
@@ -57,8 +58,8 @@ export class Expansion{
   if(modal==='chapterDialogue'){const d=this.dialogue;return `<span class="eyebrow">${d.chapter.who}</span><h2>${d.step===0?d.chapter.title:'Следующий шаг'}</h2><p class="dialogue-line">${d.step===0?d.chapter.line:(CHAPTERS[s.story.chapter]?.line||'Дальше история продолжается твоими решениями.')}</p>${b('dialogueNext',d.step===0?'Дальше':'К моим планам','wide mint')}`;}
   if(modal==='map')return `<span class="eyebrow">ТВОЙ РАЙОН</span><h2>Куда пойдём?</h2><div class="district-map">${[['goHome','Дом и мастерская','⌂'],['grocery','Пятак','▧'],['pickup','Azon','▣'],['park','Старый сквер','♧']].map(([id,name,icon])=>`<button data-action="nav" data-id="${id}"><b>${icon}</b><span>${name}</span></button>`).join('')}</div>`;
   if(modal==='work')return this.workHTML();
-  if(modal==='repairSkill'){const a=this.skill;return `<span class="eyebrow">${a.action==='heat'?'КОНТРОЛЬ ПРОГРЕВА':a.action==='solder'?'ТОЧНАЯ ПАЙКА':'КАЛИБРОВКА'}</span><h2>${a.hits} / 3 контакта</h2><p>Нажми, когда отметка в зелёной зоне.</p><div class="skill-meter"><i class="skill-zone" style="left:${(a.target-a.width/2)*100}%;width:${a.width*100}%"></i><b class="skill-needle"></b></div>${b('skillHit',a.action==='heat'?'Прогреть':a.action==='solder'?'Контакт':'Проверить','wide mint')}<small>Промах расходует немного энергии. Прибор сохраняет успешные контакты.</small>`;}
-  if(modal==='credits')return `<span class="eyebrow">ПЕРЕКУП · 0.7</span><h2>Vithel</h2><p>Разработчик: <strong>Vithel</strong></p><p>Создано с помощью <strong>GPT-6.1 Sol</strong></p><h3>Звук</h3><label class="volume-control">Музыка <output>${Math.round(s.options.music*100)}%</output><input id="music-volume" data-setting="music" type="range" min="0" max="100" value="${Math.round(s.options.music*100)}"></label><label class="volume-control">Эффекты <output>${Math.round(s.options.effects*100)}%</output><input id="effects-volume" data-setting="effects" type="range" min="0" max="100" value="${Math.round(s.options.effects*100)}"></label><details><summary>Музыка, звуки и лицензии</summary><p>HoliznaCC0 — MIdLife; I love Myself More Than Anyone Else.</p><p>Звуки: Kenney Interface Sounds и Impact Sounds (CC0).</p><p>Nunito и Russo One (SIL OFL). Three.js (MIT). Подробные источники и лицензии включены в архив игры.</p></details>`;
+  if(modal==='repairSkill'){const a=this.skill;return `<span class="eyebrow">${a.action==='heat'?'КОНТРОЛЬ ПРОГРЕВА':a.action==='solder'?'ТОЧНАЯ ПАЙКА':'КАЛИБРОВКА'}</span><h2>${a.hits} / 3 контакта</h2><p>Нажми, когда отметка в зелёной зоне.</p><div class="skill-meter"><i class="skill-zone" style="left:${(a.target-a.width/2)*100}%;width:${a.width*100}%"></i><b class="skill-needle" style="left:${a.needle*100}%"></b></div>${b('skillHit',a.action==='heat'?'Прогреть':a.action==='solder'?'Контакт':'Проверить','wide mint')}<small>Промах расходует немного энергии. Прибор сохраняет успешные контакты.</small>`;}
+  if(modal==='credits')return `<span class="eyebrow">ПЕРЕКУП · 0.8</span><h2>Vithel</h2><p>Разработчик: <strong>Vithel</strong></p><p>Создано с помощью <strong>GPT-6.1 Sol</strong></p><h3>Звук</h3><label class="volume-control">Музыка <output>${Math.round(s.options.music*100)}%</output><input id="music-volume" data-setting="music" type="range" min="0" max="100" value="${Math.round(s.options.music*100)}"></label><label class="volume-control">Эффекты <output>${Math.round(s.options.effects*100)}%</output><input id="effects-volume" data-setting="effects" type="range" min="0" max="100" value="${Math.round(s.options.effects*100)}"></label><details><summary>Музыка, звуки и лицензии</summary><p>HoliznaCC0 — MIdLife; I love Myself More Than Anyone Else.</p><p>Звуки: Kenney Interface Sounds и Impact Sounds (CC0).</p><p>Nunito и Russo One (SIL OFL). Three.js (MIT). Подробные источники и лицензии включены в архив игры.</p></details>`;
   return null;
  }
  counterButtons(modal){if(modal==='grocery'||modal==='pickup')return this.button('workMenu','Подработать здесь','wide',`data-id="${modal}"`);if(modal==='pause')return this.button('map','Карта района','wide')+this.button('credits','Звук и авторы','wide');return '';}
@@ -68,7 +69,7 @@ export class Expansion{
   if(place==='pickup')return `<span class="eyebrow">МАША · ПОМОЩЬ НА СКЛАДЕ</span><h2>Посылка ${a.tasks[a.index].code}</h2><p>Найди коробку с этим номером на полках, возьми её и принеси Маше к стойке.</p>${b('resumePickup','К коробкам','wide blue')}${b('finishShift','Закончить смену','wide subtle')}`;
   const task=a.tasks[a.index];return `<span class="eyebrow">${title}</span><div class="shift-status"><strong>Заказ ${a.index+1} / 5</strong><span id="shift-time">${Math.ceil(a.remaining)} с</span></div><h2>${place==='grocery'?'Пробей покупку':'Найди посылку'}</h2><div class="shift-request">${this.img(task.item)}<div><strong>${itemName(task.item)}</strong><small>${place==='pickup'?'Ячейка '+task.cell:'Покупатель ждёт у кассы'}</small></div></div><div class="shift-options">${task.options.map(id=>b('shiftPick',itemName(id),'',`data-id="${id}"`)).join('')}</div><small>Ошибок: ${a.errors} · −15 ₽ за ошибку</small>${b('finishShift','Закончить раньше','wide subtle')}`;
  }
- afterPaint(title,modal){const s=this.state(),w=this.world();this.audio.setLevels(s.options);this.audio.duck(!!modal);w.friendConversing=modal==='friend';w.staffWorking=modal==='work';
+ afterPaint(title,modal){const s=this.state(),w=this.world();this.audio.setLevels(s.options);this.audio.duck(!!modal);w.friendConversing=modal==='friend';w.precisionUI=modal==='repairSkill';w.staffWorking=modal==='work';
   document.querySelectorAll('[data-setting]').forEach(el=>el.addEventListener('input',()=>{s.options[el.dataset.setting]=Number(el.value)/100;el.parentElement.querySelector('output').textContent=el.value+'%';this.audio.setLevels(s.options);this.save()}));
   if(!title&&s.training.complete){const c=chapterStatus(s),o=document.getElementById('objective');if(w.mode==='repair')o.classList.add('hidden');else if(c)o.innerHTML=`<span class="eyebrow">ГЛАВА ${s.story.chapter+1}</span><strong>${c.title}</strong><small>${c.goals.filter(g=>g.done).length} / ${c.goals.length} целей · журнал сверху</small>`;}
   const dock=document.querySelector('#dock .dock-actions');if(dock&&s.training.complete&&!['grocery','pickup'].includes(w.mode))dock.insertAdjacentHTML('beforeend',this.button('map',this.icon('street')+'<span>Карта</span>'));
@@ -80,7 +81,7 @@ export class Expansion{
   const clock=document.querySelector('#hud .lilac span');if(clock&&w.lifeAction?.kind!=='sleep'){const value=String(Math.floor(s.time/60)%24).padStart(2,'0')+':'+String(Math.floor(s.time%60)).padStart(2,'0');if(clock.textContent!==value)clock.textContent=value;}
   const dayBadge=document.querySelector('#hud .day');if(dayBadge)dayBadge.dataset.season=seasonFor(s.day).name;
   this.audio.update();this.audio.setTheme(w.mode==='repair'?'repair':skyPhase(s.time).dark>.6?'night':'home');
-  if(this.skill&&modal==='repairSkill'){const a=this.skill;a.time+=dt;a.needle=.5+.45*Math.sin(a.time*(this.phone()?.difficulty==='expert'?3.7:2.7));const el=document.querySelector('.skill-needle');if(el)el.style.left=(a.needle*100)+'%';}
+  if(this.skill&&modal==='repairSkill'){const a=this.skill;a.time+=dt;a.needle=.5+.45*Math.sin(a.time*(this.phone()?.difficulty==='expert'?2.1:1.6));const el=document.querySelector('.skill-needle');if(el)el.style.left=(a.needle*100)+'%';}
   const a=s.work.active;if(a&&a.place!=='pickup'&&!a.finished&&modal==='work'&&!w.busy){a.remaining=Math.max(0,a.remaining-dt);const el=document.querySelector('#shift-time');if(el)el.textContent=Math.ceil(a.remaining)+' с';if(!a.remaining){a.finished=true;this.persist()}}
  }
 }

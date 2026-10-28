@@ -5,3 +5,8 @@ __pycache__/
 node_modules/
 game/asset-data.js
 game/media-data.js
+android-app/www/
+android-app/platforms/
+android-app/plugins/
+android-app/release.jks
+android-app/build-signing.json
