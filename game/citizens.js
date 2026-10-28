@@ -10,7 +10,7 @@ export function installCitizens(w){
   const occupied=w.staffWorking||(w.mode==='grocery'&&Math.hypot(w.avatar.position.x+2.2,w.avatar.position.z+.05)<.65);const targetClerk=new T.Vector3(occupied?-2.85:-2.2,.23,occupied?-.65:-.05);w.shopClerk.position.lerp(targetClerk,Math.min(1,dt*3));
   const list=w.pedestrians.filter(n=>n.zone===w.mode),hour=(w.gameState?.time||540)/60;
   for(const n of list){
-   const late=n.zone==='street'&&(hour<6||hour>=23)&&n.id>1;n.actor.visible=!late;if(late)continue;
+   const late=n.zone==='street'&&(hour<6||hour>=21)&&n.id>0;n.actor.visible=!late;if(late)continue;
    if(t>n.next&&!n.route.length){const stops=n.zone==='grocery'?shopLoop:streetStops;n.stop=(n.stop+1)%stops.length;const [x,z]=stops[n.stop];n.route=pathfind(n.zone,{x:n.actor.position.x,z:n.actor.position.z},{x,z},.16);n.next=t+3.5+(n.id%3)*1.3;}
    let moving=false;if(n.route.length){const goal=n.route[0],delta=new T.Vector3(goal.x-n.actor.position.x,0,goal.z-n.actor.position.z);if(delta.length()<.10)n.route.shift();else{
     const velocity=delta.clone().normalize().multiplyScalar(n.speed),others=[...list.filter(o=>o!==n&&o.actor.visible).map(o=>o.actor),...(w.mode===n.zone?[w.avatar]:[])];
@@ -20,6 +20,6 @@ export function installCitizens(w){
    }}
    animateCharacter(n.actor,t+n.id*.37,moving);if(!moving&&n.zone==='grocery')n.actor.head.rotation.y=Math.sin(t*.7+n.id)*.18;
   }
-  for(const f of w.friends){const delta=w.avatar.position.clone().sub(f.actor.position);if(w.mode==='street'&&delta.length()<2.0){const target=Math.atan2(delta.x,delta.z);f.actor.rotation.y+=Math.atan2(Math.sin(target-f.actor.rotation.y),Math.cos(target-f.actor.rotation.y))*Math.min(1,dt*4)}}
+  for(const f of w.friends){f.actor.visible=hour>=6&&hour<21;const delta=w.avatar.position.clone().sub(f.actor.position);if(w.mode==='street'&&delta.length()<2.0){const target=Math.atan2(delta.x,delta.z);f.actor.rotation.y+=Math.atan2(Math.sin(target-f.actor.rotation.y),Math.cos(target-f.actor.rotation.y))*Math.min(1,dt*4)}}
  };
 }

@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import {fresh,load} from '../game/state.js';
+import {startShift,answerShift,claimWage} from '../game/progression.js';
+import {rescueChance,collapse,recover} from '../game/survival.js';
+import {buyFurniture,upgradeHouse} from '../game/housing.js';
+const s=fresh();assert.equal(s.version,8);assert.equal(s.house.level,0);s.money=10000;assert.ok(buyFurniture(s,'rug'));assert.equal(buyFurniture(s,'rug'),false);assert.ok(upgradeHouse(s));assert.equal(s.house.level,1);assert.equal(s.money,4900);assert.equal(rescueChance(s,'room'),0);s.friends.lev=1;assert.equal(rescueChance(s,'room'),.3);assert.equal(rescueChance(s,'street'),.8);collapse(s,'room',()=>.29);assert.equal(s.health.rescue,true);assert.equal(s.health.status,'collapsed');s.health.status='hospital';assert.ok(recover(s));assert.equal(s.health.status,'well');assert.ok(s.hp>0);
+for(const [zone,roll,expected]of [['room',.30,false],['street',.799,true],['street',.80,false]]){const t=fresh();t.friends.lev=1;collapse(t,zone,()=>roll);assert.equal(t.health.rescue,expected);const stored=t.health;collapse(t,zone,()=>0);assert.equal(t.health,stored,'a saved collapse must not roll again');}
+const job=startShift(s,'pickup');assert.equal(job.tasks[0].code,'013');assert.equal(answerShift(s,'640'),false);for(const t of job.tasks)assert.ok(answerShift(s,t.code));assert.equal(job.finished,true);assert.ok(claimWage(s)>0);assert.equal(claimWage(s),null);assert.equal(s.work.pickup,1);
+globalThis.localStorage={getItem:()=>JSON.stringify({version:7,money:1234,profile:{created:true}})};const old=load();assert.equal(old.version,8);assert.equal(old.house.level,1);assert.equal(old.money,1234);console.log('PASS: house purchases/upgrades, saved rescue odds, recovery, physical parcel codes, single wage, previous save migration');

@@ -15,7 +15,7 @@ export function installEnvironment(w){
  for(const x of[17.4,19.5])add(landscape,[.06,2.4,.06],[x,1.2,4.25],'#5d7473');
  const label=makeSign('СКВЕР',1.1,.36,'#e3ecd2','#3d6252');label.position.set(21.5,2.05,1.4);w.scene.add(label);for(const x of[20.9,22.1])add(landscape,[.07,1.8,.07],[x,.9,1.4],'#6c8064');
  // The living room shares a real, walkable floor with the original workshop.
- const living=new T.Group();w.homeScene.add(living);add(living,[3.8,.18,3.5],[3.85,-.07,0],'#ad9478');
+ const living=new T.Group();w.livingRoom=living;w.homeScene.add(living);add(living,[3.8,.18,3.5],[3.85,-.07,0],'#ad9478');
  for(let z=-1.35;z<1.4;z+=.89)for(let x=2.1;x<5.6;x+=.35)add(living,[.34,.025,.88],[x,.033,z],'#c2a583');
  add(living,[3.8,2.45,.10],[3.85,1.20,-1.70],'#c9d9cd');
  add(living,[1.6,1.0,.06],[4.0,1.45,-1.635],'#f1ebdc');add(living,[1.44,.84,.07],[4,1.45,-1.59],'#94b6bd');
@@ -41,7 +41,7 @@ export function installEnvironment(w){
  w.updateClimate=(dt)=>{
   const s=w.gameState;if(!s)return;const season=seasonFor(s.day),phase=skyPhase(s.time),outdoors=w.mode==='street'||w.mode==='park';w.climate={season:season.id,seasonName:season.name,phase:phase.name,dark:phase.dark};
   if(w.mode==='street'){w.targetFocus.x=T.MathUtils.clamp(w.avatar.position.x+2.7,2,21);w.targetFocus.z=1;}
-  if(w.mode==='room')w.targetFocus.x=w.aspect<.8?T.MathUtils.clamp(w.avatar.position.x+.65,.6,4.1):1.5;
+  if(w.mode==='room')w.targetFocus.x=w.aspect<.8?T.MathUtils.clamp(w.avatar.position.x+.65,.6,w.gameState?.house?.level===3?6.5:4.1):1.5;
   const alpha=1-Math.exp(-dt*2.5);if(w.lifeAction?.kind!=='sleep')for(const l of w.environmentLights){const outdoor=l.scene===w.scene||l.scene===w.parkScene;if(l.scene===w.repairScene)continue;const sky=new T.Color(phase.sky||season.sky);if(l.scene.background)l.scene.background.lerp(outdoor?sky:new T.Color(phase.dark>.6?'#9fadaf':'#d5dfd5'),alpha);if(l.scene.fog)l.scene.fog.color.copy(l.scene.background);if(l.sun){l.sun.intensity=T.MathUtils.lerp(l.sun.intensity,outdoor?3.2-phase.dark*2.95:2.8-phase.dark*1.25,alpha);l.sun.color.lerp(new T.Color(phase.sun),alpha)}if(l.hemi)l.hemi.intensity=outdoor?2.3-phase.dark*1.6:2.3-phase.dark*.45;}
   for(const crown of w.sway)crown.material.color.lerp(new T.Color(season.leaf),alpha);w.floor.material.color.lerp(new T.Color(season.ground),alpha);w.parkGround.material.color.lerp(new T.Color(season.ground),alpha);for(const lamp of w.lampGlows)lamp.intensity=phase.dark*3;
   for(const roof of w.snowRoofs)roof.visible=season.id==='winter';for(const material of w.windowMats)material.emissiveIntensity=phase.dark*.45;w.snow.visible=w.snowPark.visible=season.id==='winter';if(season.id==='winter'){for(const cloud of[w.snow,w.snowPark]){const a=cloud.geometry.attributes.position;for(let i=0;i<a.count;i++){a.array[i*3+1]-=dt*.65;a.array[i*3]+=dt*.12;if(a.array[i*3+1]<0)a.array[i*3+1]=7}a.needsUpdate=true}}w.pond.material.color.lerp(new T.Color(season.id==='winter'?'#b4d6dd':'#74a9b2'),alpha);w.pond.position.y=.105+Math.sin(w.clock.elapsedTime*.7)*.003;

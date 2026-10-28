@@ -2,7 +2,7 @@ import * as T from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 // Dimensions are metres; the workshop magnifies the whole handset uniformly.
 export function buildHandset(w){
- const old=w.phone,root=new T.Group();root.position.copy(old.position);root.scale.copy(old.scale);old.removeFromParent();w.repairScene.add(root);
+ const old=w.phone,root=new T.Group();root.position.copy(old.position);root.scale.copy(old.scale);root.position.y=.028-.012*root.scale.y;old.removeFromParent();w.repairScene.add(root);
  const mats={};const mat=(color,metal=0)=>mats[color]||=(new T.MeshStandardMaterial({color,roughness:metal?.38:.73,metalness:metal}));
  const box=(parent,size,pos,color,r=.001)=>{const m=new T.Mesh(new RoundedBoxGeometry(...size,2,r),mat(color));m.position.set(...pos);parent.add(m);m.castShadow=m.receiveShadow=true;return m};
  box(root,[.076,.008,.153],[0,.016,0],'#273b43',.004);

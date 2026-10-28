@@ -1,0 +1,23 @@
+import * as T from 'three';
+import {character,animateCharacter} from './characters.js';
+export function rescueChance(s,zone){return ['room','repair'].includes(zone)?(Object.values(s.friends).some(n=>n>0)?.30:0):.80;}
+export function collapse(s,zone,random=Math.random){if(s.health.status!=='well')return s.health;const chance=rescueChance(s,zone);s.health={status:'collapsed',rescue:random()<chance,chance,collapses:(s.health.collapses||0)+1};return s.health;}
+export function recover(s){if(s.health.status!=='hospital')return false;s.money-=Math.min(s.money,350);s.food=55;s.water=65;s.energy=55;s.hp=65;s.day++;s.time=600;s.health.status='well';return true;}
+export class Survival{
+ constructor(api){Object.assign(this,api);this.time=0;this.fall=0;}
+ init(){const root=document.getElementById('game'),veil=document.createElement('div');veil.id='exhaustion-veil';root.append(veil);this.veil=veil;const w=this.world();this.thugs=[10.3,18.5].map((x,i)=>{const a=character({color:i?'#4d566d':'#454e46',hair:'#302e2b'});a.position.set(x,.05,2.65);a.visible=false;w.scene.add(a);return a});}
+ handle(action){const s=this.state(),w=this.world();if(action==='hospitalReturn'){if(recover(s)){w.busy=false;w.avatar.quaternion.identity();w.setZone('room');this.close();this.persist()}return true}
+ if(['nightRun','nightTalk','nightPay'].includes(action)){if(!this.encounter)return true;const success=action==='nightPay'||Math.random()<(action==='nightRun'?(s.profile.perk==='runner'?.90:.65):(s.profile.perk==='charm'?.85:.45));let loss=0;if(action==='nightPay'||!success){loss=Math.min(s.money,action==='nightPay'?150:300);s.money-=loss;}if(action==='nightRun')s.energy=Math.max(0,s.energy-8);if(!success)s.hp=Math.max(0,s.hp-12);this.encounter=false;s.night.last=s.day;this.close();this.persist();this.toast(success?(loss?'Отдал '+loss+' ₽ и ушёл.':'Удалось спокойно уйти.'):'Потерял '+loss+' ₽. Пора вернуться домой.');return true}return false;}
+ render(modal){const s=this.state(),b=this.button;if(modal==='hospital')return `<span class="eyebrow">ТЕБЕ ПОМОГЛИ</span><h2>Очнулся в больнице</h2><p>${s.health.chance===.3?'Друг заглянул домой и вызвал скорую.':'Прохожий заметил тебя и вызвал скорую.'}</p><p>Лечение: до 350 ₽. Следи за водой, едой и отдыхом.</p>${b('hospitalReturn','Вернуться домой утром','wide mint')}`;
+ if(modal==='gameOver')return `<span class="eyebrow">ИСТОРИЯ ОБОРВАЛАСЬ</span><h2>Помощь не успела</h2><p>Истощение оказалось сильнее. В следующий раз не откладывай еду, воду и сон.</p>${b('askReset','Начать новую историю','wide mint')}`;
+ if(modal==='nightEncounter')return `<span class="eyebrow">НОЧНОЙ РАЙОН</span><h2>«Есть мелочь, мастер?»</h2><p>Двое преградили путь. Можно попробовать уйти или договориться.</p>${b('nightRun','Убежать','wide',s.energy<10?'disabled':'')}${b('nightTalk','Договориться','wide')}${b('nightPay','Отдать 150 ₽ и уйти','wide subtle')}`;return null;}
+ frame(dt,title,modal){if(title)return;const s=this.state(),w=this.world();this.time+=dt;const active=!['pause','credits','hospital','gameOver','reset'].includes(modal)&&s.training.complete;
+ if(active&&s.health.status==='well'){s.energy=Math.max(0,s.energy-dt/160);const critical=[s.food,s.water,s.energy].filter(v=>v<=0).length;if(critical)s.hp=Math.max(0,s.hp-dt*(.22+critical*.18));if(s.hp<=0){collapse(s,w.mode);this.close();w.busy=true;w.avatarGoal=null;w.waypoints=[];this.fall=0;this.persist();}}
+ const low=Math.min(s.food,s.water,s.energy,s.hp),severity=low<=0?.65:low<10?(10-low)/25:0;this.veil.style.opacity=s.health.status==='well'?severity:s.health.status==='collapsed'?.6:0;w.canvas.style.filter=severity?'blur('+severity*.8+'px)':'';if(severity)w.camera.rotateZ(Math.sin(this.time*.75)*.018*severity);
+ document.querySelectorAll('.need').forEach((el,i)=>el.classList.toggle('critical',[s.food,s.water,s.energy,s.hp][i]<12));
+ if(s.health.status==='collapsed'){w.busy=true;w.avatarGoal=null;this.fall+=dt;w.avatar.rotation.z=-Math.PI/2*Math.min(1,this.fall/1.5);if(this.fall>=3){w.busy=false;s.health.status=s.health.rescue?'hospital':'dead';this.open(s.health.rescue?'hospital':'gameOver');this.persist()}}
+ if(s.health.status==='hospital'&&modal!=='hospital')this.open('hospital');if(s.health.status==='dead'&&!['gameOver','reset'].includes(modal))this.open('gameOver');
+ const night=s.time>=1260||s.time<330,spawn=night&&s.day%3!==0&&s.night.last!==s.day;
+ for(const a of this.thugs){a.visible=spawn;animateCharacter(a,this.time,false);if(spawn&&w.mode==='street'&&!modal&&!w.busy&&w.avatar.position.distanceTo(a.position)<1.35&&!this.encounter&&s.health.status==='well'){this.encounter=true;this.open('nightEncounter');}}
+ }
+}
