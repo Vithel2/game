@@ -29,17 +29,17 @@ def pcm(path,speed=1):
  args=['ffmpeg','-v','error','-i',str(path),'-f','f32le','-ar',str(rate),'-ac','2']
  if speed!=1:args+=['-af',f'asetrate={round(rate*speed)},aresample={rate}']
  return np.frombuffer(subprocess.check_output(args+['pipe:1']),dtype='<f4').reshape(-1,2)
-size=round(duration*rate);audio=np.zeros((size,2),np.float32);m=pcm(music);n=min(len(m),size);audio[:n]+=m[:n]*(.19 if kind=='trailer' else .12);offset=0.;cache={};count=0
+size=round(duration*rate);audio=np.zeros((size,2),np.float32);m=pcm(music);n=min(len(m),size);audio[:n]+=m[:n]*(.42 if kind=='trailer' else .25);offset=0.;cache={};count=0
 for clip in clips:
  for event in clip['events']:
   key=(event['key'],round(event.get('rate',1),2));source=root/'web/audio/pack'/(key[0]+'.ogg')
   if not source.exists():continue
   if key not in cache:cache[key]=pcm(source,key[1])
   sound=cache[key];start=round((offset+max(0,event['time']))*rate);n=min(len(sound),size-start)
-  if n>0:audio[start:start+n]+=sound[:n]*event['volume']*1.6;count+=1
+  if n>0:audio[start:start+n]+=sound[:n]*event['volume']*1.3;count+=1
  offset+=clip['seconds']
 fade=min(rate,size);audio[:fade]*=np.linspace(0,1,fade)[:,None];end=min(rate*2,size);audio[-end:]*=np.linspace(1,0,end)[:,None];audio=np.clip(audio,-.97,.97);raw=tmp/'mix.f32';audio.astype('<f4').tofile(raw)
 out=root/'marketing/0.9'/('trailer-1080p60.mp4' if kind=='trailer' else 'tutorial.mp4')
-run(['-i',joined,'-f','f32le','-ar',rate,'-ac','2','-i',raw,'-map','0:v','-map','1:a','-c:v','copy','-c:a','aac','-b:a','256k','-t',duration,'-movflags','+faststart',out])
+run(['-i',joined,'-f','f32le','-ar',rate,'-ac','2','-i',raw,'-map','0:v','-map','1:a','-c:v','copy','-af','loudnorm=I='+('-16' if kind=='trailer' else '-18')+':TP=-1.5:LRA=9','-c:a','aac','-ar','48000','-ac','2','-b:a','256k','-t',duration,'-movflags','+faststart',out])
 (root/'marketing/0.9'/(kind+'-capture.json')).write_text(json.dumps({'width':width,'height':height,'fps':fps,'duration':duration,'captured_game_sound_events':count,'captured_simulation_frames':sum(round(c['seconds']*fps) for c in clips),'method':'fixed-step actual game simulation, one render per output frame; no interpolation','clips':[{'name':c['name'],'seconds':c['seconds'],'hashes':c['hashes']} for c in clips]},ensure_ascii=False,indent=2))
 print('VIDEO_OK',kind,width,height,fps,'duration',duration,'FX events',count,'bytes',out.stat().st_size)
