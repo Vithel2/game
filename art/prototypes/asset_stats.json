@@ -1,0 +1,17 @@
+{
+  "smartphone": {
+    "objects": 36,
+    "triangles": 31304,
+    "bytes": 1268948
+  },
+  "repair_workbench": {
+    "objects": 39,
+    "triangles": 8180,
+    "bytes": 397612
+  },
+  "starter_room": {
+    "objects": 99,
+    "triangles": 18252,
+    "bytes": 804424
+  }
+}

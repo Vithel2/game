@@ -1,0 +1,22 @@
+{
+  "grocery_pyatak": {
+    "objects": 93,
+    "triangles": 17112
+  },
+  "azon_pickup": {
+    "objects": 92,
+    "triangles": 17832
+  },
+  "repair_tools": {
+    "objects": 91,
+    "triangles": 13764
+  },
+  "usb_c_charger": {
+    "objects": 11,
+    "triangles": 4268
+  },
+  "repairable_phone_exploded": {
+    "objects": 121,
+    "triangles": 22324
+  }
+}
