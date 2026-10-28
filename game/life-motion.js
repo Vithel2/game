@@ -5,7 +5,7 @@ import {ease,keys,reachArm} from './motion.js';
 export function installLifeMotion(w){
  w.performLife=(kind,done,item=null,options={})=>{
   if(w.busy)return;w.busy=true;w.avatarGoal=null;w.waypoints=[];const actor=w.avatar,start=actor.position.clone(),q=actor.quaternion.clone();
-  const duration={sleep:6,record:4.5,drink:3.6,eat:4.0,shop:.95,work:1.35,salvage:2.6,rest:4}[kind]||3;
+  const duration=options.duration||{sleep:6,record:4.5,drink:3.6,eat:4.0,shop:.95,work:1.35,salvage:2.6,rest:4}[kind]||3;
   const prop=['sleep','rest'].includes(kind)?null:product(item||(kind==='drink'?'water':kind==='record'?'phone':kind==='salvage'?'donor':'sandwich'));if(prop){prop.scale.setScalar(kind==='shop'?.30:kind==='record'?.25:.34);actor.add(prop)}
   w.lifeAction={kind,time:0,duration,actor,start,q,prop,done,options,sounds:new Set()};const caption=document.getElementById('life-caption');caption.classList.add('show');
  };

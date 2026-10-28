@@ -3,6 +3,7 @@ import {product,FOOD} from './products.js';
 import {batchStatic} from './batching.js';
 import {character,animateCharacter} from './characters.js';
 import {pathfind,blocked,slide,AREAS} from './navigation.js';
+import {faceTravel} from './steering.js';
 
 export const DOORS={room:[.15,.05,2.35],grocery:[6.59,.05,1.65],pickup:[12.22,.05,1.65]};
 export function installNeighborhood(w){
@@ -46,8 +47,15 @@ export function installNeighborhood(w){
   const zone=w.mode,r=.17;let moving=false;w.trainingRing.visible=!!w.trainingMove;w.trainingRing.scale.setScalar(1+Math.sin(t*4)*.12);if(w.wasSeated&&!w.seated&&!w.lifeAction)w.avatar.position.set(.4,.05,1.3);w.wasSeated=w.seated;if(w.seated&&zone==='room'&&!w.lifeAction)w.avatar.position.lerp(new T.Vector3(1.04,.05,1.33),Math.min(1,dt*6));
   if(!w.blocked&&!w.busy&&!w.transitioning&&zone!=='repair'){
    const dir=new T.Vector3((w.keys.KeyD?1:0)-(w.keys.KeyA?1:0),0,(w.keys.KeyS?1:0)-(w.keys.KeyW?1:0));const speed=2.4*(w.profile.perk==='runner'?1.25:1)*((w.avatar.parcel.visible||w.avatar.basket.visible)&&w.profile.perk!=='strong'?.85:1);
-   if(dir.lengthSq()){dir.normalize().multiplyScalar(dt*speed);const p=slide(zone,{x:w.avatar.position.x,z:w.avatar.position.z},{x:w.avatar.position.x+dir.x,z:w.avatar.position.z+dir.z},r);moving=Math.hypot(p.x-w.avatar.position.x,p.z-w.avatar.position.z)>.001;w.avatar.position.x=p.x;w.avatar.position.z=p.z;{const a=Math.atan2(dir.x,dir.z);w.avatar.rotation.y+=Math.atan2(Math.sin(a-w.avatar.rotation.y),Math.cos(a-w.avatar.rotation.y))*Math.min(1,dt*10)}w.avatarGoal=null;w.waypoints=[];}
-   if(w.avatarGoal){const d=w.avatarGoal.clone().sub(w.avatar.position);if(d.length()<.04){w.avatar.position.copy(w.avatarGoal);w.avatarGoal=w.waypoints.shift()||null;if(!w.avatarGoal){const cb=w.walkCallback;w.walkCallback=null;cb?.();w.onAction('moved')}}else{const step=d.clone().multiplyScalar(Math.min(1,dt*speed/d.length()));const pos=slide(zone,{x:w.avatar.position.x,z:w.avatar.position.z},{x:w.avatar.position.x+step.x,z:w.avatar.position.z+step.z},r);w.avatar.position.set(pos.x,w.avatarGoal.y,pos.z);{const a=Math.atan2(d.x,d.z);w.avatar.rotation.y+=Math.atan2(Math.sin(a-w.avatar.rotation.y),Math.cos(a-w.avatar.rotation.y))*Math.min(1,dt*10)}moving=true;}}
+   if(dir.lengthSq()){
+    w.avatarGoal=null;w.waypoints=[];w.walkCallback=null;dir.normalize();
+    const p=slide(zone,{x:w.avatar.position.x,z:w.avatar.position.z},{x:w.avatar.position.x+dir.x*dt*speed,z:w.avatar.position.z+dir.z*dt*speed},r),dx=p.x-w.avatar.position.x,dz=p.z-w.avatar.position.z;
+    if(faceTravel(w.avatar,dx,dz,dt)){moving=Math.hypot(dx,dz)>.001;w.avatar.position.x=p.x;w.avatar.position.z=p.z;}
+   }
+   if(w.avatarGoal){const d=w.avatarGoal.clone().sub(w.avatar.position);if(d.length()<.04){w.avatar.position.copy(w.avatarGoal);w.avatarGoal=w.waypoints.shift()||null;if(!w.avatarGoal){const cb=w.walkCallback;w.walkCallback=null;cb?.();w.onAction('moved')}}else{
+    const step=d.clone().multiplyScalar(Math.min(1,dt*speed/d.length())),pos=slide(zone,{x:w.avatar.position.x,z:w.avatar.position.z},{x:w.avatar.position.x+step.x,z:w.avatar.position.z+step.z},r),dx=pos.x-w.avatar.position.x,dz=pos.z-w.avatar.position.z;
+    if(faceTravel(w.avatar,dx,dz,dt)){moving=Math.hypot(dx,dz)>.001;w.avatar.position.set(pos.x,w.avatarGoal.y,pos.z);}
+   }}
    if(moving&&t-(w.lastStep||0)>.34){w.lastStep=t;w.onAction('step')}
   }
   if(!w.lifeAction)animateCharacter(w.avatar,t,moving,w.seated);

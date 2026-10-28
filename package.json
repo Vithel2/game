@@ -1,6 +1,6 @@
 {
   "name": "s-ruk-game",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,13 +15,17 @@
     "test:navigation": "node tests/navigation.test.mjs",
     "test:gadgets": "node tests/gadgets.e2e.mjs",
     "test:life": "node tests/life.test.mjs",
-    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/s-ruk-playable-0.5.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
+    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/s-ruk-playable-0.6.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
     "test:resume": "node tests/resume.e2e.mjs",
     "test:progression": "node tests/progression.test.mjs",
     "test:season": "node tests/season-smoke.e2e.mjs",
     "test:shifts": "node tests/shifts.e2e.mjs",
     "test:advanced": "node tests/advanced-repair.e2e.mjs",
-    "test:animation": "node tests/animation.e2e.mjs"
+    "test:animation": "node tests/animation.e2e.mjs",
+    "test:trading": "node tests/trading.test.mjs",
+    "test:release": "node tests/release6.e2e.mjs",
+    "test:repair-motion": "node tests/repair6.e2e.mjs",
+    "test:release-mobile": "node tests/release6-mobile.e2e.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

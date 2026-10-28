@@ -1,0 +1,57 @@
+import {VLOG_TOPICS,publishVlog,rivals} from './life.js';
+import {money} from './state.js';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BEATS=[{name:'Зацепи зрителя',line:'Покажи, с чего всё началось.',lens:'wide',caption:'Один аппарат. Второй шанс.'},{name:'Покажи процесс',line:'Крупный план: зрителю нужны детали.',lens:'detail',caption:'Смотри, что было внутри.'},{name:'Дай результат',line:'Заверши историю понятным итогом.',lens:'wide',caption:'Получилось! Что восстановим дальше?'}];
+export class MediaStudio{
+ constructor(api){Object.assign(this,api);this.pc=false;this.tab='channel';this.phase=0;this.needle=.5;this.playback=null;}
+ handle(action,id){const s=this.state(),w=this.world();const title=document.querySelector('#video-title')?.value;if(title&&s.vlog.production)s.vlog.production.title=title;
+  if(action==='pcYoupube'){if(!s.pc.owned)return true;this.pc=true;this.tab='channel';if(w.mode!=='room'){this.walk('pc');return true}this.open('channel');return true}
+  if(action==='openPcChannel'){this.pc=true;this.pendingPC=true;this.walk('pc');return true}
+  if(action==='returnChannel'){this.returnToChannel();return true}
+  if(action==='youpube'){this.pc=false;this.open('phone','youpube');return true}
+  if(action==='channelTab'){this.tab=id;this.open('channel');return true}
+  if(action==='recordVlog'){
+   const topic=VLOG_TOPICS.find(t=>t.id===id);if(!topic?.need(s)||s.vlog.lastDay===s.day){this.toast('Сегодня ролик уже вышел или тема пока недоступна.');return true}
+   if(!s.vlog.production||s.vlog.production.topic!==id)s.vlog.production={topic:id,clips:[],lens:'wide',status:'shoot',edit:'',cover:'before',title:topic.name};
+   this.phase=0;this.open(s.vlog.production.status==='edit'?'videoEdit':'videoShoot');this.persist();return true;
+  }
+  if(action==='videoLens'){if(s.vlog.production)s.vlog.production.lens=id;this.persist();return true}
+  if(action==='videoCapture'){
+   const a=s.vlog.production;if(!a||a.status!=='shoot'||a.clips.length>=3)return true;const beat=BEATS[a.clips.length],timing=1-Math.abs(this.needle-.5)*2,quality=.45+timing*.35+(a.lens===beat.lens?.20:0);
+   this.close();w.performLife('record',()=>{a.clips.push({beat:a.clips.length,quality,lens:a.lens});this.phase=0;if(a.clips.length===3)a.status='edit';this.open(a.status==='edit'?'videoEdit':'videoShoot');this.persist()},'phone',{duration:1.65});return true;
+  }
+  if(action==='retakeClip'){const a=s.vlog.production;if(!a||!a.clips.length)return true;a.clips.pop();a.status='shoot';this.open('videoShoot');this.persist();return true}
+  if(action==='editStyle'){if(s.vlog.production)s.vlog.production.edit=id;this.persist();return true}
+  if(action==='videoCover'){if(s.vlog.production)s.vlog.production.cover=id;this.persist();return true}
+  if(action==='finishVideo'){
+   const a=s.vlog.production;if(!a||a.clips.length!==3||!a.edit)return true;a.title=(document.querySelector('#video-title')?.value.trim()||a.title).slice(0,70);const fit=a.topic==='repair'?'detail':a.topic==='haul'?'fast':'story';
+   s.vlog.draft=a.topic;s.vlog.draftQuality=a.clips.reduce((n,c)=>n+c.quality,0)/3+(a.edit===fit?.20:.08)+(a.cover==='result'?.06:0);s.vlog.draftTitle=a.title;s.vlog.cover=a.cover;a.status='ready';this.returnToChannel();this.persist();return true;
+  }
+  if(action==='publishVlog'){
+   if(!s.vlog.draft)return true;const post=publishVlog(s,s.vlog.draft);if(!post)return true;s.vlog.production=null;s.vlog.draft=null;s.vlog.draftQuality=null;s.vlog.draftTitle=null;this.audio.play('reward');this.tick(25,2);this.returnToChannel();this.persist();this.toast('Ролик опубликован: +'+post.subs+' подписчиков · '+post.views+' просмотров.');return true;
+  }
+  if(action==='resumeVideo'){const a=s.vlog.production;if(a)this.open(a.status==='shoot'?'videoShoot':a.status==='edit'?'videoEdit':'channel');return true}
+  if(action==='watchPost'){const post=s.vlog.posts.find(p=>p.id===Number(id));if(post){this.playback={post,time:0};this.open('videoWatch')}return true}
+  return false;
+ }
+ returnToChannel(){this.pc?this.open('channel'):this.open('phone','youpube');}
+ channelBody(){const s=this.state(),b=this.button,ranked=[...rivals(s),{id:'you',name:s.profile.name,subs:s.vlog.subs}].sort((a,b)=>b.subs-a.subs),topic=VLOG_TOPICS.find(t=>t.id===s.vlog.production?.topic);
+  const stats=`<div class="channel-stats"><b>${s.vlog.subs}<small>подписчиков</small></b><b>${s.vlog.views}<small>просмотров</small></b><b>${money(s.vlog.earned)}<small>доход</small></b></div>`;
+  const posts=`<div class="video-library">${s.vlog.posts.map(p=>`<article class="channel-video"><button class="video-thumb ${p.cover==='result'?'result':''}" data-action="watchPost" data-id="${p.id}">${this.img('phone')}<b>&#9654;&#xfe0e;</b></button><div><strong>${esc(p.title||p.topic)}</strong><small>${p.views} просмотров · день ${p.day}</small><small>+${p.subs} подписчиков · ${money(p.earnings)}</small></div></article>`).join('')||'<p>Твой первый ролик будет здесь.</p>'}</div>`;
+  const studio=`<h3>Творческая студия</h3>${s.vlog.draft?`<div class="notice">${esc(s.vlog.draftTitle||topic?.name||'Ролик готов')}<small>Качество: ${Math.round((s.vlog.draftQuality||1)*100)}%</small></div>${b('publishVlog','Опубликовать ролик','wide mint')}`:s.vlog.production?`<p>${esc(topic?.name)} · ${s.vlog.production.clips.length} / 3 кадров</p>${b('resumeVideo','Продолжить съёмку и монтаж','wide mint')}`:''}${!s.vlog.production&&!s.vlog.draft?VLOG_TOPICS.map(t=>`<article class="vlog-topic"><strong>${t.name}</strong><small>${t.text}</small>${b('recordVlog','Снять ролик','',`data-id="${t.id}" ${!t.need(s)||s.vlog.lastDay===s.day?'disabled':''}`)}</article>`).join(''):''}<small>Три кадра → монтаж → обложка → публикация. Один ролик в день.</small>`;
+  const analytics=`<h3>Статистика и доход</h3>${b('monetize',s.vlog.monetized?'Монетизация подключена':'Подключить монетизацию · 500 подписчиков, 3 ролика','wide',s.vlog.monetized?'disabled':'')}${b('sponsor','Реклама местного сервиса · от 300 подписчиков','wide',s.vlog.subs<300||s.day-(s.vlog.lastSponsorDay||-10)<3?'disabled':'')}<div class="analytics-bars">${s.vlog.posts.slice(0,7).reverse().map(p=>`<div style="height:${Math.max(5,p.views/Math.max(1,...s.vlog.posts.map(p=>p.views))*100)}%"><span>${p.views}</span></div>`).join('')}</div><h3>Авторы района</h3>${ranked.map((r,i)=>`<div class="rank-row ${r.id==='you'?'you':''}"><b>${i+1}</b><span>${esc(r.name)}</span><strong>${r.subs}</strong>${r.id!=='you'?b('claimRace','Награда','',`data-id="${r.id}" ${s.vlog.subs<=r.subs||s.vlog.raceClaims?.includes(r.id)?'disabled':''}`):''}</div>`).join('')}`;
+  if(!this.pc)return stats+studio+posts+analytics;
+  return stats+(this.tab==='studio'?studio:this.tab==='analytics'?analytics:`<div class="channel-banner"><div class="channel-avatar">${esc(s.profile.name.slice(0,1))}</div><div><h2>${esc(s.profile.name)}</h2><span>Техника со второй историей · @${esc(s.profile.name.replace(/ /g,'_'))}</span></div></div>${b('channelTab','Создать ролик','mint','data-id="studio"')}${posts}`);
+ }
+ phoneHTML(){return `<header class="app-header youpube-header"><h2>Youpube</h2><p>Твой канал и творческая студия</p></header><div class="app-body">${this.state().pc.owned?this.button('openPcChannel','Открыть сайт на домашнем ПК','wide'):''}${this.channelBody()}</div>`;}
+ render(modal){const s=this.state(),b=this.button,a=s.vlog.production;
+  if(modal==='channel')return `<div class="site-browser"><span class="browser-dots">● ● ●</span><span class="site-address">youpube.local/@${esc(s.profile.name.replace(/ /g,'_'))}</span>${b('pc','Рабочий стол','compact')}</div><header class="site-header"><strong><i>&#9654;&#xfe0e;</i> Youpube</strong><span>Твой канал</span></header><nav class="journal-tabs">${[['channel','Канал'],['studio','Студия'],['analytics','Статистика']].map(([id,name])=>b('channelTab',name,this.tab===id?'mint':'',`data-id="${id}"`)).join('')}</nav>${this.channelBody()}`;
+  if(modal==='videoShoot'&&a){const beat=BEATS[a.clips.length];if(!beat)return null;return `<span class="eyebrow">YOUPUBE · СЪЁМКА ${a.clips.length+1} / 3</span><h2>${beat.name}</h2><div class="viewfinder ${a.lens==='detail'?'detail':''}"><span class="rec-dot">● REC</span>${this.img(a.topic==='pc'?'pc':a.topic==='repair'?'battery':'phone')}<div class="frame-grid"></div><span class="viewfinder-caption">${beat.caption}</span></div><p>${beat.line}</p><div class="shot-lenses">${b('videoLens','Общий план',a.lens==='wide'?'mint':'','data-id="wide"')}${b('videoLens','Детали',a.lens==='detail'?'mint':'','data-id="detail"')}</div><div class="skill-meter"><i class="skill-zone" style="left:32%;width:36%"></i><b id="camera-needle" class="skill-needle"></b></div><small>Выбери подходящий план. Снимай, когда отметка в зелёной зоне.</small>${b('videoCapture','● Снять кадр','wide coral')}${a.clips.length?b('retakeClip','Переснять предыдущий кадр','wide subtle'):''}`;}
+  if(modal==='videoEdit'&&a)return `<span class="eyebrow">YOUPUBE · МОНТАЖ</span><h2>Собери историю</h2><div class="clip-timeline">${a.clips.map((c,i)=>`<div>${this.img(i===1?'battery':'phone')}<b>0${i+1}</b><small>${Math.round(c.quality*100)}%</small></div>`).join('')}</div><h3>Темп ролика</h3><div class="edit-styles">${[['story','История','Для рассказа и влога'],['detail','Подробно','Для ремонта и обзора'],['fast','Динамично','Для находок и покупок']].map(([id,name,text])=>`<button class="${a.edit===id?'chosen':''}" data-action="editStyle" data-id="${id}"><strong>${name}</strong><small>${text}</small></button>`).join('')}</div><h3>Название</h3><input id="video-title" class="nickname" maxlength="70" value="${esc(a.title)}"><h3>Обложка</h3><div class="shot-lenses">${b('videoCover','До ремонта',a.cover==='before'?'mint':'','data-id="before"')}${b('videoCover','Готовый результат',a.cover==='result'?'mint':'','data-id="result"')}</div>${b('finishVideo','Завершить монтаж','wide mint',a.edit?'':'disabled')}${b('retakeClip','Переснять последний кадр','wide subtle')}`;
+  if(modal==='videoWatch'&&this.playback){const p=this.playback.post;return `<span class="eyebrow">YOUPUBE · ${esc(s.profile.name)}</span><h2>${esc(p.title||p.topic)}</h2><div class="video-player viewfinder">${this.img('phone')}<div class="play-caption" id="play-caption">${BEATS[0].caption}</div></div><progress id="play-progress" value="0" max="12"></progress><small>${p.views} просмотров · день ${p.day}</small><p>★ Зритель: «${p.quality>1?'Классно показал детали и результат!':'Жду следующую историю из мастерской!'}»</p>${b('returnChannel','Вернуться к каналу','wide mint')}`;}
+  return null;
+ }
+ frame(dt,modal){if(this.pendingPC&&modal==='pc'){this.pendingPC=false;this.pc=true;this.open('channel');}if(modal==='videoShoot'){this.phase+=dt;this.needle=.5+.46*Math.sin(this.phase*1.6);const el=document.querySelector('#camera-needle');if(el)el.style.left=this.needle*100+'%';}
+  if(modal==='videoWatch'&&this.playback){this.playback.time=(this.playback.time+dt)%12;const progress=document.querySelector('#play-progress'),caption=document.querySelector('#play-caption');if(progress)progress.value=this.playback.time;if(caption)caption.textContent=BEATS[Math.min(2,Math.floor(this.playback.time/4))].caption;}
+ }
+}

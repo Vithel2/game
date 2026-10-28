@@ -1,9 +1,12 @@
 import * as T from 'three';
 
 function textPlane(text,{w=1.5,h=.35,bg='#fff2cf',color='#43554b'}={}){
- const c=document.createElement('canvas');c.width=768;c.height=192;const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,c.width,c.height);x.fillStyle=color;x.textAlign='center';x.textBaseline='middle';x.font='900 60px Nunito, sans-serif';x.fillText(text,c.width/2,c.height/2,720);const texture=new T.CanvasTexture(c);texture.colorSpace=T.SRGBColorSpace;return new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture}));
+ const c=document.createElement('canvas');c.width=1024;c.height=Math.max(64,Math.round(1024*h/w));const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,c.width,c.height);x.fillStyle=color;x.textAlign='center';x.textBaseline='middle';let font=Math.floor(c.height*.85);x.font='900 '+font+'px Nunito, sans-serif';while(x.measureText(text).width>c.width*.94){font--;x.font='900 '+font+'px Nunito, sans-serif'}x.fillText(text,c.width/2,c.height*.53);const texture=new T.CanvasTexture(c);texture.colorSpace=T.SRGBColorSpace;return new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture}));
 }
 export function installLocations(world){
+ // Replace tiny mesh lettering with high-resolution, high-contrast facade signs before batching.
+ for(const key of ['grocery','pickup'])world.assets[key].traverse(o=>{if(o.name.startsWith('Text_'))o.visible=false;});
+ for(const [text,x,y,z,w,h,bg]of[['ПЯТАК',6.7,2.72,1.12,3.8,.43,'#397354'],['ПРОДУКТЫ У ДОМА',6.7,2.36,1.12,5.45,.29,'#397354'],['azon',12.1,2.73,1.12,2.75,.43,'#175cbb'],['ПУНКТ ВЫДАЧИ',12.1,2.35,1.12,3.02,.28,'#175cbb']]){const sign=textPlane(text,{w,h,bg,color:'#fff9e9'});sign.position.set(x,y,z);world.scene.add(sign);}
  const {scene,homeScene}=world;world.groceryScene=new T.Scene();world.pickupScene=new T.Scene();for(const s of[world.groceryScene,world.pickupScene]){s.background=new T.Color('#d2ded7');world.light(s)}
  // Interior copies have no exterior facade/roof. The street copies remain complete.
  for(const [key,s] of[['grocery',world.groceryScene],['pickup',world.pickupScene]]){
