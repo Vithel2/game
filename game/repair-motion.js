@@ -32,12 +32,24 @@ export function installRepairMotion(w){
   }
   if(a.action==='connector'){const k=c.connectors[a.index],lift=keys(u,[[0,0],[.30,0],[.58,1],[.75,.75],[1,.7]])*(w.stage==='disconnect'?1:-1);k.position.copy(a.connectorFrom);k.position.y+=lift*.004;k.rotation.z=lift*.12;}
   if(a.action==='close'){
-   const blend=ease(Math.max(0,Math.min(1,(u-.22)/.57)));c.display.position.lerpVectors(a.coverFrom,c.hinge.clone().sub(c.pivot),blend);c.display.quaternion.slerpQuaternions(a.coverQ,new T.Quaternion(),blend);
+   const blend=ease(Math.max(0,Math.min(1,(u-.22)/.57)));c.display.position.lerpVectors(a.coverFrom,c.hinge.clone().sub(c.pivot),blend);c.display.position.y+=Math.sin(blend*Math.PI)*.080;c.display.quaternion.slerpQuaternions(a.coverQ,new T.Quaternion(),blend);
   }
   if(a.obj){
    let orient=a.q;if(a.action==='open'){const coverQ=c.display.getWorldQuaternion(new T.Quaternion());orient=coverQ;}const q=a.fromQ.clone().slerp(orient,reach);if(a.action==='screw'&&u>.25)q.premultiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),Math.PI*(a.tighten?-1:1)*keys(u,[[0,0],[.25,0],[.74,3],[1,3]])));if(a.action==='connector'&&u>.28&&u<.76)q.premultiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),Math.sin((u-.28)/.48*Math.PI)*.12));q.slerp(a.fromQ,withdraw);
    let aim=a.target.clone();if(a.action==='heat')aim.x+=Math.sin(u*Math.PI*4)*.4;if(a.action==='clean')aim.x+=Math.sin(u*Math.PI*9)*.15;if(a.action==='seal'){const corners=[[-.031,-.063],[.031,-.063],[.031,.063],[-.031,.063],[-.031,-.063]],n=Math.min(3,Math.floor(u*4)),v=u*4-n;aim.copy(c.root.localToWorld(new T.Vector3(T.MathUtils.lerp(corners[n][0],corners[n+1][0],v),.045,T.MathUtils.lerp(corners[n][1],corners[n+1][1],v))))}
-   const tip=a.obj.userData.tip.clone().multiply(a.obj.scale).applyQuaternion(q),pos=aim.sub(tip);a.obj.position.lerpVectors(a.from,pos,reach).lerp(a.from,withdraw);a.obj.quaternion.copy(q);
+   const tip=a.obj.userData.tip.clone().multiply(a.obj.scale).applyQuaternion(q),pos=aim.sub(tip);a.obj.position.lerpVectors(a.from,pos,reach).lerp(a.from,withdraw);
+   if(a.action==='screw'){
+    // Lift first, cross above the parked display, descend vertically to the screw.
+    const high=.85,aboveFrom=a.from.clone().add(new T.Vector3(0,high,0)),aboveTip=pos.clone().add(new T.Vector3(0,high,0));
+    if(u<.08)a.obj.position.lerpVectors(a.from,aboveFrom,ease(u/.08));
+    else if(u<.18)a.obj.position.lerpVectors(aboveFrom,aboveTip,ease((u-.08)/.10));
+    else if(u<.25)a.obj.position.lerpVectors(aboveTip,pos,ease((u-.18)/.07));
+    else if(u<.80)a.obj.position.copy(pos);
+    else if(u<.88)a.obj.position.lerpVectors(pos,aboveTip,ease((u-.80)/.08));
+    else if(u<.96)a.obj.position.lerpVectors(aboveTip,aboveFrom,ease((u-.88)/.08));
+    else a.obj.position.lerpVectors(aboveFrom,a.from,ease((u-.96)/.04));
+   }
+   a.obj.quaternion.copy(q);
   }
   if(a.flying){
    const v=ease(Math.max(0,Math.min(1,(u-.22)/.50))),end=(a.action==='remove'?w.binPosition.clone():a.target.clone()).sub(a.flyOffset);a.flying.position.lerpVectors(a.flyFrom,end,v);a.flying.position.y+=Math.sin(v*Math.PI)*.24;if(a.action==='remove')a.flying.quaternion.slerpQuaternions(a.flyQ,new T.Quaternion(),v);

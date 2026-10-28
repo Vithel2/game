@@ -23,7 +23,7 @@ export class Marketplace{
   if(action==='sellerProfile'){this.open('sellerProfile');return true;}
   if(action==='shipSale'){
    const d=s.market.deals.find(d=>d.id===Number(id));if(w.mode!=='pickup'||!d||d.status!=='dropoff'){this.toast('Передай аппарат сотруднику внутри Azon.');return true}
-   this.close();w.walkTo([.05,.23,.70],()=>{const active=s.market.deals.find(a=>a.id===Number(id));if(active?.status!=='dropoff')return;w.performLife('work',()=>{shipDeal(s,id);this.audio.play('parcel');this.tick(12,2);this.open('pickup');this.persist();this.toast('Посылка отправлена. Покупатель получит её завтра.')},'phone',{place:'pickup'})});return true;
+   this.close();w.walkTo([-1.9,.26,1.05],()=>{const active=s.market.deals.find(a=>a.id===Number(id));if(active?.status!=='dropoff')return;w.performLife('work',()=>{shipDeal(s,id);this.audio.play('parcel');this.tick(12,2);this.open('pickup');this.persist();this.toast('Посылка отправлена. Покупатель получит её завтра.')},'phone',{place:'pickup'})});return true;
   }
   return false;
  }

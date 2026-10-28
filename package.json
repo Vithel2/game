@@ -1,6 +1,6 @@
 {
   "name": "s-ruk-game",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "test:navigation": "node tests/navigation.test.mjs",
     "test:gadgets": "node tests/gadgets.e2e.mjs",
     "test:life": "node tests/life.test.mjs",
-    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/perekup-second-chance-0.8.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
+    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/perekup-second-chance-0.9.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
     "test:resume": "node tests/resume.e2e.mjs",
     "test:progression": "node tests/progression.test.mjs",
     "test:season": "node tests/season-smoke.e2e.mjs",
@@ -35,7 +35,13 @@
     "test:release8": "node tests/release8.test.mjs",
     "test:release8-browser": "node tests/release8.e2e.mjs",
     "test:release8-media": "node tests/media8.e2e.mjs",
-    "test:release8-touch": "node tests/precision8-mobile.e2e.mjs"
+    "test:release8-touch": "node tests/precision8-mobile.e2e.mjs",
+    "test:release9": "node tests/release9.test.mjs",
+    "test:release9-browser": "node tests/release9.e2e.mjs",
+    "capture:release9": "node tools/render_marketing_09.mjs",
+    "build:windows": "npm run package:offline && python3 tools/build_windows.py",
+    "test:parcels9": "node tests/parcel9.e2e.mjs",
+    "compose:release9": "python3 tools/compose_videos_09.py trailer && python3 tools/compose_videos_09.py tutorial"
   },
   "dependencies": {
     "three": "0.180.0"

@@ -1,0 +1,196 @@
+{
+  "width": 1600,
+  "height": 900,
+  "fps": 30,
+  "duration": 53.8,
+  "captured_game_sound_events": 55,
+  "captured_simulation_frames": 1614,
+  "method": "fixed-step actual game simulation, one render per output frame; no interpolation",
+  "clips": [
+    {
+      "name": "01-story",
+      "seconds": 3.2,
+      "hashes": [
+        "ce6673687319b2acc9ae58d177d690907d55e6e89d116629ff833837cb230705",
+        "c970f8f1e1ce282f91d0f788c0d06bb9d3df0ca4d032267cf50e91fa5e356a4e",
+        "087a83aff8ae90c905be82f8b6d5d333c48f869024161c99e75e95a6f83c5c2e",
+        "6e62370fdf441a217be914ac5d0c1f0f7b57d07b0538d8493f82e001bf9c3c73"
+      ]
+    },
+    {
+      "name": "02-profile",
+      "seconds": 2,
+      "hashes": [
+        "a99f8d90e54525cebc260cd5b25684dfc012034f23a57387b1d334aa0f25a7b4",
+        "827fb6ba0ef1a238877799010b3c4076f3b7b2bca40bbfd74ec5ed2470aee9a4"
+      ]
+    },
+    {
+      "name": "03-move",
+      "seconds": 1.8,
+      "hashes": [
+        "1e8786335a6185534118bea4fd782b2dbfa711b36a626b5c58eafbec40e34a8f",
+        "33e055153423b2b2a925446ae729bf83b7c29cf71a72eee044d53533e4df4296"
+      ]
+    },
+    {
+      "name": "04-avitu",
+      "seconds": 2.3,
+      "hashes": [
+        "ec05111b7f24a99def61abc9df8848b781793a95959ae4894247e22fbd2bd542",
+        "510cb2cf4c566ad77d218b0a985b3123a0ea7c121ee6be6bba96e5ebb79aee64",
+        "f1ac529173ccc2cdf1f2285f8ac301523561c1199038efa1ec67c8dce55a45b3"
+      ]
+    },
+    {
+      "name": "05-inspect",
+      "seconds": 2.5,
+      "hashes": [
+        "4fe26354408d7645b7aad4be7af22acb52244d0105fe7c5b5131688da408f142",
+        "76eece3f823bc8b92d703a2f648fe716879e5eec6f1f09992d8854789ec8329c",
+        "cddc87978edaffe8bec8468683691e778ca257aad975560edd2c9fc9c779f4d5"
+      ]
+    },
+    {
+      "name": "06-diagnose",
+      "seconds": 4.3,
+      "hashes": [
+        "7b03ae0874cfa1c069f8e7b200c6d53e5ea634b5c6a8385fec3f21a66cc503ff",
+        "794956cca4fb2107e9580d201df7e528199d697fe7f67199f146925fb922128e",
+        "afec5835f51bc7a6620946452d4beab1ad73a3897fdad3192c3284a39a4f966c",
+        "bfd3178b8c6090b2045c7543c54edbd2ceac5f5de377c456313953ed73d457d0",
+        "6bdf8f62deddbb85aff2d60a05b141c7d3b9fc71638757204d4d03dbffe2b61c"
+      ]
+    },
+    {
+      "name": "07-open",
+      "seconds": 2.5,
+      "hashes": [
+        "762b34a9385364bde492fb1525c58105cb1ba7616604c4eee9d34b07ff91629f",
+        "17a6b72f74230cc8b581c59468b19b253d67a1531746331d18317ffbbc2cbfc3",
+        "a75d7e9d13302449521a3343449f2f8f0e5cef58a5b7f2e5793c10e0eec47e6c"
+      ]
+    },
+    {
+      "name": "08-flex",
+      "seconds": 1.2,
+      "hashes": [
+        "c8657f19a13982305f00ae4ec792f80251fc4991ff793dfebac0e351f70d4e0a",
+        "4ac351eed0f7d76dff9a8150d65e33cbe372c609f6095d8f09ed18b9a3d20f3a"
+      ]
+    },
+    {
+      "name": "09-frame",
+      "seconds": 2.3,
+      "hashes": [
+        "55f9cf584c5da5d2f98a1692ee6d12b476ec26bc14e0b6d5e0566c82de7ac91f",
+        "616736aef8e62ea2bc5e167ed890fef621f82b64f99ae8e7c1b0e03f5677db77",
+        "4c23511c43c3560e68cbb4624db46267f625d0af25408cd1bcc2a69dd16e125b"
+      ]
+    },
+    {
+      "name": "10-battery",
+      "seconds": 1.9,
+      "hashes": [
+        "880771f0d8a7da52abc88bc7dee8e0dcb3f911913b25a48886a2de92e8def740",
+        "355ced178ab373ad731e59973401065f0f66062f5557b9bf5915fcf8c6fdb405"
+      ]
+    },
+    {
+      "name": "11-order",
+      "seconds": 2.5,
+      "hashes": [
+        "49b18050aea21346f33a963f20c8e6bb0fddaf1e3c8482c4f8a24641391f07de",
+        "d15b7fb1d252a8cd02b4d75f75a70d3cd4d83e8e0dbfcac222f0b344375d0972",
+        "2fe02982b0823a1821d328aebbc62952acf756b48b797aa7257ef41b3fd00930"
+      ]
+    },
+    {
+      "name": "12-sleep",
+      "seconds": 6.1,
+      "hashes": [
+        "6ec5dedfc9e2b4384d78a294d2fdafa92d2bab01f4af757644bbdee1f2177ced",
+        "c69e0561ec5738f1d74fab95012a6b47cc6516be48404919ccc1a0cd9353c5fb",
+        "ecb56cccb0ba35ae51b60ec275854c70c3cf6fe18049731c0823e057cd753b95",
+        "fdcd85e3cd6297f910ee2247b2d82c4a05b43bceae182b3768ee0267d0744105",
+        "7f8efc7ae21c527d3a6a5728267fcd18913d21fa8a0749601928eb3ea0069999",
+        "c57dd1ddfd2a2522868585589aefe6a080522707122b0ddb086aa76065a2a879",
+        "bbdc2b61f9138e6e952547c1b1720ece56e95372e934ddd78f6b533660122832"
+      ]
+    },
+    {
+      "name": "13-collect",
+      "seconds": 2.3,
+      "hashes": [
+        "33f2066239dc9e6d2b794b505b5ae6adca8802a9e1a74dd62f3cca3888366526",
+        "3e589a22c403f1f7654790b4c1a923f372afb3ad49d1f1d68895328f217e3b2f",
+        "d511f78f9fb641f1bd9011eae06d30f963f65d7a412acb501e117243e658078c"
+      ]
+    },
+    {
+      "name": "14-install",
+      "seconds": 2.1,
+      "hashes": [
+        "8f8eb6a91ee0f0704570537e3ec91f565caa689430e4232ef5facd9a4a37ccae",
+        "5d8f4d3b91423efe13c33cd14ce61956c34f947ec50f649c24819dcc62bc78ec",
+        "78d438cb80c6e58866aa00990bfbfcf8ba969bceecf21bcfad31620ed61f1544"
+      ]
+    },
+    {
+      "name": "15-tighten",
+      "seconds": 2.3,
+      "hashes": [
+        "4598ab4353fb07f263dbd911fbdb205efde815bf6948bc6c8817e46186bcfd1b",
+        "9f4fe26f711796cc8fd1d96fa2c3aeb7e0c9d5c65f330be4dfdcbeb37be22fa9",
+        "b4192ba5283f77565707e337f38dc8c4f5262f05f547441ddd37e98afa25819c"
+      ]
+    },
+    {
+      "name": "16-close",
+      "seconds": 2.2,
+      "hashes": [
+        "b71216d7cecc5443b4e28daea19581e7ae974ec69ddc2456767414d830d74e44",
+        "65782439b473058c284ef69dea5a13d8955f1190b52de5f3d5ededf614f52597",
+        "acc9471ca85e6d345bfa3ac2e551f9dacc3d6fe59ea15e68226fae48b6ae969a"
+      ]
+    },
+    {
+      "name": "17-check",
+      "seconds": 5.6,
+      "hashes": [
+        "e953915f0e871c741109267b7c07583d7419eede97d48acee701c946481e17ed",
+        "6f98ccd5f7fbb40f3acc616a598ec52f196879b1c09582da681892d373eeb55e",
+        "f0eafa7c8c0295c642c67e2643deaf6a424e0965559c48f6f187af6f209d9c5d",
+        "61557289c17a0a0a2c63cf62ae1d45087ba768ffabcde0683eda7b7c629676aa",
+        "0484bee9b6da6debbc1af041d605c0222479d972ffcd6a9a0cf7b54600ba60c8",
+        "5dd84f5bb0a3d4384f34da4b777ba9391d85f8b568446583785b71f7cec902c9"
+      ]
+    },
+    {
+      "name": "18-sell",
+      "seconds": 2.2,
+      "hashes": [
+        "90a054031b1e3d3ee4738962240da02313e6312938d2e3599cc9bb842bc60538",
+        "8642642a7cd4c0ae2437bfdbfccc2232fd3eaf3bf93dfeb398df54e000a5d855",
+        "400ab1586d709b4e00497a2b9ab1a5c86c2949a58dea2f242db002f503115bcc"
+      ]
+    },
+    {
+      "name": "19-buyer",
+      "seconds": 1.5,
+      "hashes": [
+        "af1ba5600b0d03917270a1ddf37f67443fe2b29f78534b14d990cce0417d5cfc",
+        "889252b9fd9cfaaf7d5e17435135e1a259897da0768567b667091145e7464329"
+      ]
+    },
+    {
+      "name": "20-done",
+      "seconds": 3,
+      "hashes": [
+        "2d2faff2bb9a1426055576a35b355f8aa3289b876c799c2154b402e681181454",
+        "0b7e23259969abfac4a633c121e5ec01cf2b5cfa7957c21734b26e0cbc3aa5db",
+        "410a60abf83c8216fa2bc1f33d43dee50dcb64b4047031527d6b920ff449c0b8"
+      ]
+    }
+  ]
+}

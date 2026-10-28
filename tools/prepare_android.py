@@ -2,7 +2,7 @@
 from pathlib import Path
 from zipfile import ZipFile
 root = Path(__file__).resolve().parents[1]
-with ZipFile(root / 'releases/perekup-second-chance-0.8.zip') as archive:
+with ZipFile(root / 'releases/perekup-second-chance-0.9.zip') as archive:
     html = archive.read('play.html').decode('utf-8')
 html = html.replace('</head>', '<script src="cordova.js"></script></head>')
 out = root / 'android-app/www'

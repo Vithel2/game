@@ -6,4 +6,4 @@ export const HANDSETS={
  pro:{name:'Aster 13 Pro',chip:'A15 Pro',ram:6,storage:256,screen:'6,1″ OLED · 120 Гц',battery:3095,charge:27,network:224}
 };
 export function handset(p={}){if(HANDSETS[p.model])return HANDSETS[p.model];return /Neo|R \/ 02/.test(p.name||'')?HANDSETS.neo:/Pro|PRO/.test(p.name||'')?HANDSETS.pro:HANDSETS.mini;}
-export function renameLegacy(p){if(!p)return p;return {...p,...(p.closed&&!p.fixed&&(p.inside||0)!==screwMask(p)?{closed:false}:{}),...(p.name?{name:p.name.replace(/R \/ 01/g,HANDSETS.mini.name).replace(/R \/ 02/g,HANDSETS.neo.name).replace(/R \/ PRO/g,HANDSETS.pro.name)}:{})};}
+export function renameLegacy(p){if(!p)return p;return {...p,...(p.closed&&!p.fixed&&((p.inside||0)&screwMask(p))!==screwMask(p)?{closed:false}:{}),...(p.name?{name:p.name.replace(/R \/ 01/g,HANDSETS.mini.name).replace(/R \/ 02/g,HANDSETS.neo.name).replace(/R \/ PRO/g,HANDSETS.pro.name)}:{})};}

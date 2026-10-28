@@ -1,7 +1,14 @@
 {
   "name": "perekup-android",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
-  "devDependencies": {"cordova": "12.0.0", "cordova-android": "14.0.1"},
-  "cordova": {"platforms": ["android"]}
+  "devDependencies": {
+    "cordova": "12.0.0",
+    "cordova-android": "14.0.1"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  }
 }

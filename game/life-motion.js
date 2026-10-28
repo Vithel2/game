@@ -26,13 +26,19 @@ export function installLifeMotion(w){
     const lift=keys(u,[[0,0],[.20,1],[.83,1],[1,0]]);target=[.39,.80+.40*lift,.15+.20*lift];left=[-.22-.1*Math.sin(t*3)*lift,1.02+Math.sin(t*4)*.15*lift,.30];actor.head.rotation.y=-.09*lift;actor.head.rotation.z=Math.sin(t*2)*.035*lift;actor.mouth.scale.y=1+Math.max(0,Math.sin(t*15))*.4*lift;const timer=document.querySelector('#recording-viewfinder span');if(timer)timer.textContent='00:'+String(Math.floor(a.time)).padStart(2,'0');propQ.setFromAxisAngle(new T.Vector3(1,0,0),-Math.PI/2*lift);cap.textContent='Запись в Youpube';play('record',.2,'scan');play('stop',.9,'scan');
    }else if(a.kind==='shop'||a.kind==='salvage'){
     const lift=keys(u,[[0,0],[.28,1],[.65,1],[1,0]]);target=[.22,.7+.3*lift,.1+.25*lift];cap.textContent=a.kind==='shop'?'В корзину':'Осматриваем находку';play('pick',.35,'parcel');
+   }else if(a.kind==='parcelLift'||a.kind==='parcelGive'){
+    actor.rotation.y=Math.PI;const lift=keys(u,[[0,0],[.25,1],[.72,1],[1,0]]);target=[.16,.87+.18*lift,.24+.10*lift];left=[-.16,.87+.18*lift,.24+.10*lift];actor.head.rotation.x=.12*lift;cap.textContent=a.kind==='parcelLift'?'Берём коробку '+a.options.code+' с полки':'Передаём посылку Маше';play('box',.40,'parcel');if(a.kind==='parcelGive')play('scan',.80,'scan');
    }else if(a.kind==='work'){
     const lift=keys(u,[[0,0],[.2,1],[.7,1],[1,0]]);target=[.1,.85+.20*lift,.15+.2*lift];left=[-.16,.95,.23];cap.textContent=a.options.place==='pickup'?'Проверка и упаковка':'Товар пробит';play('scan',.45,'scan');play('bag',.85,'parcel');
    }
-   reachArm(actor,1,target,1);if(['eat','record','work'].includes(a.kind))reachArm(actor,0,left,.75);
+   reachArm(actor,1,target,1);if(['eat','record','work','parcelLift','parcelGive'].includes(a.kind))reachArm(actor,0,left,.75);
    if(a.prop){actor.updateMatrixWorld(true);const hand=actor.worldToLocal(actor.hands[1].getWorldPosition(new T.Vector3()));a.prop.position.copy(hand).add(a.kind==='record'?new T.Vector3(.025,.09,.08):new T.Vector3(0,-.08,.035));a.prop.quaternion.copy(propQ);
     if(a.kind==='shop'){
      const source=a.options.source||actor.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,1,.4)),end=actor.basket.getWorldPosition(new T.Vector3()).add(new T.Vector3(0,.12,0)),held=actor.hands[1].getWorldPosition(new T.Vector3());const p=u<.55?source.clone().lerp(held,ease(u/.55)):held.clone().lerp(end,ease((u-.55)/.45));p.y+=Math.sin(u*Math.PI)*.14;a.prop.position.copy(actor.worldToLocal(p));
+    }
+    if(a.kind==='parcelLift'||a.kind==='parcelGive'){
+     const held=actor.localToWorld(new T.Vector3(0,.88,.28)),source=a.options.source||held,destination=a.options.destination||held;
+     const v=ease(Math.max(0,Math.min(1,(u-.25)/.50))),point=a.kind==='parcelLift'?source.clone().lerp(held,v):held.clone().lerp(destination,v);point.y+=Math.sin(v*Math.PI)*.08;a.prop.position.copy(actor.worldToLocal(point));a.prop.visible=a.kind==='parcelLift'?u>.25:u<.92;
     }
     if(a.kind==='work'){const start=new T.Vector3(w.mode==='grocery'?-2.16:-.9,1.15,.24),end=start.clone().add(new T.Vector3(.4,.08,.2)),p=start.clone().lerp(end,ease(u));p.y+=Math.sin(u*Math.PI)*.12;a.prop.position.copy(actor.worldToLocal(p));}
    }

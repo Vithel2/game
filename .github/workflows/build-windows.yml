@@ -1,0 +1,32 @@
+name: Build Windows installer
+on:
+  push:
+    branches: [main]
+    paths: ['desktop/**', 'game/**', 'web/**', 'tools/**', 'package*.json', 'index.html', '.github/workflows/build-windows.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: sudo apt-get update -qq && sudo apt-get install -y mono-mcs libmono-system-windows-forms4.0-cil nsis
+      - run: npm ci
+      - run: npm run test:release9 && npm run test:state
+      - run: npm run package:offline
+      - run: python3 tools/build_windows.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Perekup-Windows
+          path: |
+            releases/Perekup-*-Setup.exe
+            releases/perekup-*-windows-portable.zip
+          if-no-files-found: error

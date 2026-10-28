@@ -1,4 +1,6 @@
+import {batchStatic} from './batching.js';
 import * as T from 'three';
+import {character} from './characters.js';
 
 function textPlane(text,{w=1.5,h=.35,bg='#fff2cf',color='#43554b'}={}){
  const c=document.createElement('canvas');c.width=1024;c.height=Math.max(64,Math.round(1024*h/w));const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,c.width,c.height);x.fillStyle=color;x.textAlign='center';x.textBaseline='middle';let font=Math.floor(c.height*.85);x.font='900 '+font+'px Nunito, sans-serif';while(x.measureText(text).width>c.width*.94){font--;x.font='900 '+font+'px Nunito, sans-serif'}x.fillText(text,c.width/2,c.height*.53);const texture=new T.CanvasTexture(c);texture.colorSpace=T.SRGBColorSpace;return new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:texture}));
@@ -10,6 +12,22 @@ export function installLocations(world){
  const {scene,homeScene}=world;world.groceryScene=new T.Scene();world.pickupScene=new T.Scene();for(const s of[world.groceryScene,world.pickupScene]){s.background=new T.Color('#d2ded7');world.light(s)}
  // Interior copies have no exterior facade/roof. The street copies remain complete.
  for(const [key,s] of[['grocery',world.groceryScene],['pickup',world.pickupScene]]){
+  if(key==='pickup'){
+   const fixtures=new T.Group();s.add(fixtures);
+   const add=(size,pos,color)=>{const m=world.box(...size,color);m.position.set(...pos);m.receiveShadow=m.castShadow=true;fixtures.add(m);return m};
+   add([7.2,.22,5.3],[0,.11,0],'#819ca5');add([7.05,.025,5.15],[0,.235,0],'#e0e8e7');
+   add([7.2,2.9,.12],[0,1.67,-2.59],'#d6e5ef');add([.12,2.9,5.3],[-3.55,1.67,0],'#aac7da');
+   for(let x=-3.1;x<3.5;x+=.6)for(let z=-2.3;z<2.6;z+=.6)add([.59,.005,.59],[x,.252,z],(Math.round(x*10)+Math.round(z*10))%2?'#e2e9e8':'#dae3e3');
+   for(const x of[-3.12,-1.56,0,1.56,3.12])add([.05,2.05,.5],[x,1.27,-2.06],'#397398');
+   for(const y of[.52,1.17,1.83,2.27])add([6.3,.045,.54],[0,y,-2.06],'#7299ac');
+   add([2.0,.80,.60],[-1.9,.65,.12],'#185fc1');add([2.12,.07,.70],[-1.9,1.09,.12],'#294859');
+   add([.24,.23,.05],[-1.9,1.26,-.05],'#304958');add([.20,.16,.014],[-1.9,1.28,-.014],'#89cfc4');
+   world.pickupClerk=character({gender:'female',name:'Маша',color:'#3c76bd',hair:'#6a4a35'});world.pickupClerk.position.set(-1.95,.26,-.46);s.add(world.pickupClerk);
+   const banner=textPlane('azon · ВЫДАЧА И СКЛАД',{w:4.9,h:.45,bg:'#1761bd',color:'#fff9e9'});banner.position.set(.1,2.65,-2.50);fixtures.add(banner);
+   add([1.0,.80,.55],[2.72,.65,.15],'#b3c5ca');const pc=textPlane('ТЕХНИКА И ДЕТАЛИ',{w:1.35,h:.22,bg:'#dbe8ef',color:'#254e68'});pc.position.set(2.55,1.6,-.12);fixtures.add(pc);
+   for(const x of[1.5,2.2]){add([.47,.08,.42],[x,.64,1.8],'#4786bd');for(const dx of[-.17,.17])add([.035,.4,.035],[x+dx,.42,1.8],'#617580');}
+   batchStatic(fixtures);continue;
+  }
   const clone=world.assets[key].clone(true);clone.position.set(0,0,0);clone.traverse(o=>{if(/Roof|Front_|Window_glass|Door_|Fascia|fascia|Canopy|canopy|Entry_step|Hours_plate|Text_|Sign_|Emblem|emblem/.test(o.name)||(o.name.startsWith('Side_wall')&&o.position.x>0))o.visible=false});s.add(clone);
   const pad=world.box(key==='grocery'?4.6:3.6,.12,3.7,'#b7a687');pad.position.y=-.06;pad.receiveShadow=true;s.add(pad);
   const cashier=world.person(key==='grocery'?'#a75d52':'#426cbd');cashier.position.set(key==='grocery'?-1.35:-.95,.20,key==='grocery'?.18:.23);cashier.rotation.y=.2;s.add(cashier);

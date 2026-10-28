@@ -1,0 +1,90 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "fps": 60,
+  "duration": 32.1,
+  "captured_game_sound_events": 49,
+  "captured_simulation_frames": 1746,
+  "method": "fixed-step actual game simulation, one render per output frame; no interpolation",
+  "clips": [
+    {
+      "name": "01-city",
+      "seconds": 3.5,
+      "hashes": [
+        "7b47ebabde56baf24d0fea5363d22e9fa8456fe87f13bbf4163693e177b58ddf",
+        "e9a698c4ee456781aff251636112e6628e79462452a51243caefdcedc21e731e",
+        "721ee19ea649fe7934c0ae3ea3c5433eb1b261b9c062c7fe4fa56093410c20a5",
+        "7268f68dd888663858acbe884dfaeddfb6958eb212e68699bb7eb8026ecc2d19"
+      ]
+    },
+    {
+      "name": "02-open",
+      "seconds": 3,
+      "hashes": [
+        "9a5ebd2754f26dde7dfc705a62a7ab9557844edd6a7ed46946c104cfaa534518",
+        "66e5adeb9ce2a33f24bf6e52e977ac45728d86e207c31a54b4d4b6a67e7be880",
+        "46f336bab406852675a2fdd2ab8e1f22544c6b388cdbcd9adf6ce54f785e0438"
+      ]
+    },
+    {
+      "name": "03-connectors",
+      "seconds": 3.8,
+      "hashes": [
+        "8321a1edca34b9e4a6c737727898c09002abb91403662186f8968a75aaa9c640",
+        "32f9baffc4fdbb779a7cdaadd8acf015895542af38c56c7310d4dd24e29a9889",
+        "22329d12b1f24fe3fc0e9600074cf35415c33af8e7fd7bcc4ea7d55fe62341fd",
+        "1dd2b0cc4f300e9b9b95391502b642aa6244e1b0ac8869264e742701386f6cbc"
+      ]
+    },
+    {
+      "name": "04-driver",
+      "seconds": 2.8,
+      "hashes": [
+        "404b7203746fe27cd0df3a74468571b78b566636d55d79dd0262f880dbabcb48",
+        "5895d0da1dc8786e229133f9d9dd1e08c790d4d034880315b8165487844ccb4d",
+        "dbb8c9d848d156fe173f9552cf5496f6050b7bbece5f39847f06924fb879420f"
+      ]
+    },
+    {
+      "name": "05-warehouse",
+      "seconds": 5.2,
+      "hashes": [
+        "0ea9a02855ac57b28ac1d703e568bd82e7ab8a2e471999ab5c90352feb34f5ce",
+        "f1b4108c1f65d8908633dca5a90d5cf0f8f6c71ef48150d9e4ad2e034a80390a",
+        "2563737b1201e104d0a081ee9381fca3a52a7801336dfed33e50e4cbbffdf5c1",
+        "20fbd71ce7c07ed19981b3b51b55718bac2e4e9db82432719c4617da91d8c91b",
+        "f5d4f540da6fcedb3134cfa88b369c482615b9872c5ed437e327d504902b3331",
+        "e3dd518965c974d8337cd027da5a8bc1fd7c507e933bb4cbea030ab86618007b"
+      ]
+    },
+    {
+      "name": "06-home",
+      "seconds": 4,
+      "hashes": [
+        "6070279aa4e800eb9d409018fb3e7c455aacc53413404b7b739360249666d2b3",
+        "bf7bf43c6993d5c41725f0f35ef3f3198b726024c726f0f66845e3d8d7d81617",
+        "cea394bdfd93c9270161d44cb686963dcce722eea6efc2235e55e2b804fbe187",
+        "d584649310b617273d72e95fc8bf83fce4bf301ed49e9ce4e9caadfb5ff66bbc"
+      ]
+    },
+    {
+      "name": "07-vlog",
+      "seconds": 4.8,
+      "hashes": [
+        "12835b7d6db81e01e140cbbdc64faba61dfd2b724af8e71b395de63b91a6b353",
+        "565ce64cacb40ec09fbc7bf20efd4318178da5449b43ed697530405235ab603f",
+        "e38080747bce73c003e0f256fbc77df6b20df9af22497623b80213e83431089c",
+        "6eabf2aed25db8cad99133e2587f741020427110aab34adb46100604d35f3d8b",
+        "d06548bdcb8ff36f5b648de2b1e0b5dc36fd72eeb38635bec29a81d04d2b7ceb"
+      ]
+    },
+    {
+      "name": "08-winter",
+      "seconds": 2,
+      "hashes": [
+        "1ef1a694cbab955d783b37f8bb09d04774ea785aaadbd3a5c99f59bf726672bb",
+        "c17dbe6a0ffe86d6f629973be9ced13dcc5de3d75e75283a312f21c5f7563873"
+      ]
+    }
+  ]
+}

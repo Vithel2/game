@@ -12,13 +12,13 @@ export class Features{
   if(action==='start')return true;
   if(!s.profile.created)return ['start','storyNext','gender','perk','profileDone','profileName','sound'].includes(action);
   const t=training(s);if(!t)return true;
-  if(['close','backdrop','pause','askReset','reset','sound','credits','toolFromTable','trainingMove'].includes(action))return true;
+  if(['close','backdrop','pause','askReset','reset','sound','credits','toolFromTable','trainingMove','finishBenchTest'].includes(action))return true;
   if(t.allow.includes(action))return true;
   this.toast('Сначала закончим обучение: '+t.title);return false;
  }
  handle(action,id,el){
   const s=this.state(),w=this.world(),b=this.button,i=this.icon;
-  if(action==='meet'&&!s.training.complete&&!s.phones.some(p=>!p.client&&!p.sold)&&!String(id).endsWith('-a')){this.toast('Для первой сделки возьми R / 01 с изношенным аккумулятором.');return true;}
+  if(action==='meet'&&!s.training.complete&&!s.phones.some(p=>!p.client&&!p.sold)&&!String(id).endsWith('-a')){this.toast('Для первой сделки возьми Aster 13 mini с изношенным аккумулятором.');return true;}
   if(action==='start'&&!s.profile.created){this.story=0;this.open('prologue');return true;}
   if(action==='storyNext'){this.story++;this.open(this.story<3?'prologue':'character');return true;}
   if(action==='gender'){s.profile.gender=el.dataset.gender;this.open('character');return true;}

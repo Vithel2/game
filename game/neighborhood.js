@@ -38,7 +38,7 @@ export function installNeighborhood(w){
  for(let i=0;i<6;i++){const npc=character({gender:i%2?'female':'male',color:['#967d78','#8c9b71','#617c9a','#c99a6b','#8b7eaa','#678d84'][i],hair:i%2?'#8e6a49':'#4b463c'});npc.position.set(-2.8+i*3,.05,2.5);w.scene.add(npc);w.pedestrians.push({actor:npc,zone:'street',next:i*.7,route:[],speed:.65+i*.05})}
  for(let i=0;i<3;i++){const npc=character({color:['#bf9d69','#718c9b','#a77d8d'][i],gender:i%2?'female':'male'});npc.position.set(...[[-1.05,.23,-.6],[.95,.23,-1.20],[2.75,.23,1.55]][i]);npc.rotation.y=i===2?Math.PI:0;shop.add(npc);w.pedestrians.push({actor:npc,zone:'grocery',next:12+i*4,route:[],speed:.45})}
  for(const [id,name,x,z,color]of[['lev','Лев',-2.85,2.8,'#99725b'],['denis','Денис',14.5,2.1,'#63899b'],['liza','Лиза',9.8,2.2,'#a37892']]){const actor=character({name,color,gender:id==='liza'?'female':'male'});actor.position.set(x,.05,z);w.scene.add(actor);w.friends.push({id,name,actor})}
- const baseSet=w.setZone.bind(w);w.setZone=(zone,instant=false,spawn=null)=>{const previous=w.mode;baseSet(zone,instant);w.waypoints=[];if(zone==='street'){w.targetFocus.set(6,1.0,0);w.targetView=12.3;w.avatar.position.fromArray(spawn||DOORS[previous]||DOORS.room)}if(zone==='room')w.avatar.position.set(0,.05,1.25);if(zone==='grocery'){w.targetFocus.set(0,.85,-.1);w.targetView=6.6;w.avatar.position.set(-1.05,.23,1.65)}if(zone==='pickup')w.avatar.position.set(.15,.23,1.35);};
+ const baseSet=w.setZone.bind(w);w.setZone=(zone,instant=false,spawn=null)=>{const previous=w.mode;baseSet(zone,instant);w.waypoints=[];if(zone==='street'){w.targetFocus.set(6,1.0,0);w.targetView=12.3;w.avatar.position.fromArray(spawn||DOORS[previous]||DOORS.room)}if(zone==='room')w.avatar.position.set(0,.05,1.25);if(zone==='grocery'){w.targetFocus.set(0,.85,-.1);w.targetView=6.6;w.avatar.position.set(-1.05,.23,1.65)}if(zone==='pickup'){w.avatar.position.set(0,.26,2.15);w.targetFocus.set(0,1.0,-.1);w.targetView=7.4;}};
  w.isBlocked=(x,z)=>blocked(w.mode,x,z);w.walkTo=(target,done)=>{if(w.busy)return;const from={x:w.avatar.position.x,z:w.avatar.position.z},to={x:target[0],z:target[2]};const route=pathfind(w.mode,from,to);w.waypoints=route.map(p=>new T.Vector3(p.x,target[1],p.z));w.avatarGoal=w.waypoints.shift()||null;w.walkCallback=done;if(!w.avatarGoal&&Math.hypot(from.x-to.x,from.z-to.z)<.25)done?.()};
  w.bounds=()=>AREAS[w.mode]||AREAS.room;
  w.setMeeting=offer=>{if(w.seller){w.seller.removeFromParent()}w.seller=character({gender:offer?.seller==='Марина'||offer?.seller==='Алина'?'female':'male',color:['#688e9c','#af895f','#a57990'][(offer?.seller?.length||0)%3],name:offer?.seller||''});w.seller.position.set(3.7,.05,2.1);w.seller.visible=!!offer;w.scene.add(w.seller);w.meeting=offer;w.sellerLeaving=false;};
@@ -61,7 +61,7 @@ export function installNeighborhood(w){
   if(!w.lifeAction)animateCharacter(w.avatar,t,moving,w.seated);
   w.updateCitizens?.(dt,t);
   animateCharacter(w.shopClerk,t,false);if(w.seller?.visible){animateCharacter(w.seller,t,w.sellerLeaving);if(w.sellerLeaving){w.seller.position.x+=dt*1.3;w.seller.rotation.y=Math.PI/2;if(w.seller.position.x>15){w.seller.visible=false;w.sellerLeaving=false}}}
-  for(const f of w.friends)animateCharacter(f.actor,t,false);
+  for(const f of w.friends)animateCharacter(f.actor,t,!!f.route?.length);
  };
  w.performLife=(kind,done,item=null)=>{
   if(w.busy)return;w.busy=true;w.avatarGoal=null;w.waypoints=[];const actor=w.avatar,start=actor.position.clone(),q=actor.quaternion.clone(),duration=kind==='sleep'?4.4:kind==='record'?3.2:2.1;
