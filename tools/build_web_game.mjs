@@ -3,6 +3,8 @@ import {build} from 'esbuild';
 const files={room:'art/prototypes/starter_room.glb',bench:'art/prototypes/repair_workbench.glb',phone:'art/prototypes_v2/smartphone_v2.glb',repair:'art/expansion_01/repairable_phone_exploded.glb',grocery:'art/expansion_01/grocery_pyatak.glb',pickup:'art/expansion_01/azon_pickup.glb',driver:'art/expansion_01/precision_screwdriver.glb',spudger:'art/expansion_01/nylon_spudger.glb',suction:'art/expansion_01/suction_cup.glb'};
 const data={};for(const [key,path] of Object.entries(files))data[key]=(await readFile(path)).toString('base64');
 await writeFile('game/asset-data.js','export default '+JSON.stringify(data)+';\n');
+const media={};for(const name of ['coin','jump','land','walking','break','fall'])media[name]=(await readFile('web/audio/'+name+'.ogg')).toString('base64');
+await writeFile('game/media-data.js','export default '+JSON.stringify(media)+';\n');
 await mkdir('web',{recursive:true});
 await build({entryPoints:['game/main.js'],outfile:'web/game.js',bundle:true,format:'iife',minify:true,target:['es2020'],legalComments:'eof'});
 await writeFile('web/THREE-LICENSE.txt',await readFile('node_modules/three/LICENSE','utf8'));
