@@ -17,7 +17,7 @@ let browser;
  async function mode(value){await p.waitForFunction(v=>window.__game?.mode===v,value,{timeout:90000})}
  async function close(){if(await p.locator('.modal-close').count())await click('.modal-close')}
  async function home(){await close();const m=await p.evaluate(()=>__game.mode);if(m==='grocery'||m==='pickup')await click('#dock [data-action="goStreet"]');if(await p.evaluate(()=>__game.mode)!=='room')await click('#dock [data-action="goHome"]');await mode('room')}
- async function journal(){await close();await click('#hud [data-action="quests"]')}
+ async function journal(){await close();await click('#hud [data-action="quests"]');await click('[data-action="journalTab"][data-id="goals"]')}
  async function claim(id){await journal();await click(`[data-action="claimQuest"][data-id="${id}"]`);await close()}
  async function stage(value){await p.waitForFunction(v=>__game.stage===v,value,{timeout:90000});console.log('REPAIR',value)}
  async function tool(id){await click(`[data-action="tool"][data-tool="${id}"]`)}
@@ -32,7 +32,7 @@ let browser;
  await click('[data-action="takeBasket"]');await click('[data-action="addFood"][data-food="sandwich"]');await p.waitForFunction(()=>!__game.busy&&!__game.moving);await click('#dock [data-action="shopCounter"]');await click('[data-action="checkout"]');assert.equal((await state()).money,3380);assert.equal((await state()).stats.groceryVisits,1);
  await claim('lunch');await claim('daily-1-food');assert.equal((await state()).money,3540);
  await journal();assert.equal(await p.locator('[data-action="claimQuest"][data-id="lunch"]').isDisabled(),true);assert.equal(await p.locator('[data-action="claimQuest"][data-id="first-sale"]').isDisabled(),true);
- await click('[data-action="acceptJob"][data-id="tamara"]');assert.equal((await state()).contracts.length,1);assert.equal((await state()).phones[0].client,'tamara');assert.equal(await p.locator('[data-action="acceptJob"][data-id="masha"]').isDisabled(),true);await close();
+ await click('[data-action="journalTab"][data-id="jobs"]');await click('[data-action="acceptJob"][data-id="tamara"]');assert.equal((await state()).contracts.length,1);assert.equal((await state()).phones[0].client,'tamara');assert.equal(await p.locator('[data-action="acceptJob"][data-id="masha"]').isDisabled(),true);await close();
  await click('#dock [data-action="goStreet"]');await mode('street');await click('.hotspot[data-action="pickup"]');await mode('pickup');await p.waitForTimeout(900);await p.screenshot({path:'/tmp/sruk_update_pickup.png'});
  await click('.hotspot[data-action="pcMarket"]');await click('[data-action="buyPc"]');assert.equal((await state()).pc.owned,true);assert.equal((await state()).money,1340);await claim('computer');assert.equal((await state()).money,1590);
  console.log('PASS: intro, fonts, interiors, food, quest guards, commission acceptance, PC purchase');

@@ -12,7 +12,7 @@ export class Features{
   if(action==='start')return true;
   if(!s.profile.created)return ['start','storyNext','gender','perk','profileDone','profileName','sound'].includes(action);
   const t=training(s);if(!t)return true;
-  if(['close','backdrop','pause','askReset','reset','sound','toolFromTable','trainingMove'].includes(action))return true;
+  if(['close','backdrop','pause','askReset','reset','sound','credits','toolFromTable','trainingMove'].includes(action))return true;
   if(t.allow.includes(action))return true;
   this.toast('Сначала закончим обучение: '+t.title);return false;
  }
@@ -38,7 +38,7 @@ export class Features{
   if(action==='takeBasket'){s.shop.basket=true;w.avatar.basket.visible=true;this.persist();this.toast('Корзина в руке. Теперь выбирай продукты на полках.');return true;}
   if((action==='goStreet'||action==='goHome')&&w.mode==='grocery'){if(this.basketTotal()>0){this.open('grocery');this.toast('Сначала оплати покупки или верни товары.');return true;}s.shop.basket=false;}
   if(action==='addFood'){if(!s.shop.basket){this.toast('Сначала возьми корзину у входа.');return true}const n=Object.values(s.shop.items).reduce((a,b)=>a+b,0),limit=s.profile.perk==='strong'?14:8;if(n>=limit){this.toast('Корзина полна. Пора к кассе.');return true}if(!FOOD[id])return true;
-   w.shoppingBusy=true;const index=Object.keys(FOOD).indexOf(id),target=[-2.75+(index%5)*1.18,.23,-1.25];w.walkTo(target,()=>{s.shop.items[id]=(s.shop.items[id]||0)+1;w.spawnBasketItem(id,w.lastFoodPick?.userData.food===id?w.lastFoodPick:w.productPicks.find(o=>o.userData.food===id));this.persist();this.toast(FOOD[id].name+' в корзине');setTimeout(()=>{w.shoppingBusy=false},650)});return true;
+   w.shoppingBusy=true;const index=Object.keys(FOOD).indexOf(id),target=[-2.75+(index%5)*1.18,.23,-1.25];w.walkTo(target,()=>{w.spawnBasketItem(id,w.lastFoodPick?.userData.food===id?w.lastFoodPick:w.productPicks.find(o=>o.userData.food===id),()=>{s.shop.items[id]=(s.shop.items[id]||0)+1;w.shoppingBusy=false;this.persist();this.toast(FOOD[id].name+' в корзине')})});return true;
   }
   if(action==='checkout'){
    const total=this.basketTotal();if(!total){this.toast('Корзина пока пуста.');return true}if(s.money<total){this.toast('Не хватает денег. Можно убрать товары из корзины.');return true}s.money-=total;
@@ -53,8 +53,8 @@ export class Features{
   if(action==='monetize'){if(s.vlog.subs<500||s.vlog.posts.length<3){this.toast('Для монетизации нужны 500 подписчиков и три ролика.');return true}s.vlog.monetized=true;this.persist();return true;}
   if(action==='sponsor'){if(s.vlog.subs<300||s.day-(s.vlog.lastSponsorDay||-10)<3)return true;const pay=Math.round(250+s.vlog.subs*.3);s.money+=pay;s.vlog.earned+=pay;s.vlog.subs-=Math.ceil(s.vlog.subs*.03);s.vlog.lastSponsorDay=s.day;this.audio.play('coin');this.persist();this.toast('Рекламная интеграция: +'+money(pay)+'. Часть аудитории отписалась.');return true;}
   if(action==='claimRace'){const r=rivals(s).find(r=>r.id===id);s.vlog.raceClaims||=[];if(!r||s.vlog.subs<=r.subs||s.vlog.raceClaims.includes(id))return true;s.vlog.raceClaims.push(id);s.money+=id==='denis'?750:id==='liza'?1500:2500;this.persist();this.toast('Ты обошёл автора в рейтинге! Награда получена.');return true;}
-  if(action==='friend'){this.friend=id;this.open('friend');return true;}
-  if(action==='talkFriend'){const k=s.day+'-'+this.friend;if(!s.talked.includes(k)){s.talked.push(k);s.friends[this.friend]++;this.tick(10,0)}this.persist();return true;}
+  if(action==='friend'){const friend=w.friends.find(f=>f.id===id);if(!friend||w.mode!=='street')return true;this.friend=id;this.close();w.walkTo([friend.actor.position.x,.05,friend.actor.position.z+.55],()=>this.open('friend'));return true;}
+  if(action==='talkFriend'){const friend=w.friends.find(f=>f.id===this.friend);if(w.mode!=='street'||!friend||w.avatar.position.distanceTo(friend.actor.position)>1.5){this.toast('Подойди ближе.');return true}const k=s.day+'-'+this.friend;if(!s.talked.includes(k)){s.talked.push(k);s.friends[this.friend]++;this.tick(10,0)}this.persist();return true;}
   if(action==='collab'){if(!s.friends[this.friend]){this.toast('Сначала познакомься поближе.');return true}this.handle('recordVlog','friends');return true;}
   if(action==='friendChallenge'){this.challenge={id:this.friend,device:this.friend==='denis'?'pc':'phone',score:this.friend==='denis'?150:this.friend==='lev'?8:15};this.launchArcade(this.challenge.device);return true;}
   if(action==='claimFriendChallenge'){s.friendClaims||=[];const c=this.challenge;if(!c||s.records[c.device]<c.score||s.friendClaims.includes(c.id))return true;s.friendClaims.push(c.id);s.money+=250;s.friends[c.id]++;this.persist();return true;}

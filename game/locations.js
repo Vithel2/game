@@ -30,7 +30,7 @@ export function installLocations(world){
  const top=world.box(1.18,.07,.62,'#b68e60');top.position.y=.73;desk.add(top);for(const x of[-.49,.49])for(const z of[-.23,.23]){const leg=world.box(.04,.70,.04,'#53656a');leg.position.set(x,.35,z);desk.add(leg)}
  const pc=new T.Group();world.pcModel=pc;desk.add(pc);
  const monitor=world.box(.65,.40,.045,'#344a52');monitor.position.set(-.12,1.07,-.10);pc.add(monitor);const stem=world.box(.055,.12,.06,'#4e6268');stem.position.set(-.12,.82,-.11);pc.add(stem);const foot=world.box(.30,.025,.17,'#4e6268');foot.position.set(-.12,.77,-.10);pc.add(foot);
- world.pcScreen=textPlane('НОЧНОЙ КУРЬЕР',{w:.59,h:.32,bg:'#173d52',color:'#9cd8bd'});world.pcScreen.position.set(-.12,1.07,-.073);pc.add(world.pcScreen);
+ world.pcScreen=textPlane('DESK / 01',{w:.59,h:.32,bg:'#173d52',color:'#9cd8bd'});world.pcScreen.position.set(-.12,1.07,-.073);pc.add(world.pcScreen);
  const keyboard=world.box(.48,.025,.14,'#4d606b');keyboard.position.set(-.12,.785,.18);pc.add(keyboard);for(let x=-.32;x<.1;x+=.045)for(let z=.14;z<.23;z+=.035){const key=world.box(.032,.008,.024,'#c0d0c7');key.position.set(x,.803,z);pc.add(key)}
  const mouse=world.box(.06,.025,.10,'#99bbaa');mouse.position.set(.24,.785,.19);pc.add(mouse);
  const tower=world.box(.24,.48,.43,'#3c5261');tower.position.set(.41,1.0,-.02);pc.add(tower);world.pcFans=[];world.pcRamLights=[];
