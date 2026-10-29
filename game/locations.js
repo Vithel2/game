@@ -24,7 +24,7 @@ export function installLocations(world){
    add([.24,.23,.05],[-1.9,1.26,-.05],'#304958');add([.20,.16,.014],[-1.9,1.28,-.014],'#89cfc4');
    world.pickupClerk=character({gender:'female',name:'Маша',color:'#3c76bd',hair:'#6a4a35'});world.pickupClerk.position.set(-1.95,.26,-.46);s.add(world.pickupClerk);
    const banner=textPlane('azon · ВЫДАЧА И СКЛАД',{w:4.9,h:.45,bg:'#1761bd',color:'#fff9e9'});banner.position.set(.1,2.65,-2.50);fixtures.add(banner);
-   add([1.0,.80,.55],[2.72,.65,.15],'#b3c5ca');const pc=textPlane('ТЕХНИКА И ДЕТАЛИ',{w:1.35,h:.22,bg:'#dbe8ef',color:'#254e68'});pc.position.set(2.55,1.6,-.12);fixtures.add(pc);
+   add([1.0,.80,.55],[2.72,.65,.15],'#b3c5ca');const pc=textPlane('УПАКОВКА ПОСЫЛОК',{w:1.35,h:.22,bg:'#dbe8ef',color:'#254e68'});pc.position.set(2.55,1.6,-.12);fixtures.add(pc);
    for(const x of[1.5,2.2]){add([.47,.08,.42],[x,.64,1.8],'#4786bd');for(const dx of[-.17,.17])add([.035,.4,.035],[x+dx,.42,1.8],'#617580');}
    batchStatic(fixtures);continue;
   }

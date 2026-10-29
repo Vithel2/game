@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {fresh,offers} from '../game/state.js';
+import {publishVlog} from '../game/life.js';
+import {advanceAudience} from '../game/audience.js';
+import {deviceOS,renameLegacy} from '../game/handsets.js';
+import {buyUpgrade} from '../game/tech-shop.js';
+const choices=fresh();choices.training.complete=true;assert.ok(offers(choices).some(p=>deviceOS(p).startsWith('Android')));
+const s=fresh(),money=s.money,p=publishVlog(s,'story');assert.equal(p.views,0);assert.equal(p.subs,0);assert.equal(s.money,money);advanceAudience(s,60);assert.ok(p.views>0&&p.views<p.audience.targetViews);assert.ok(p.likes>0);const saved=JSON.parse(JSON.stringify(s)),initial=s.vlog.views;advanceAudience(saved,40);assert.ok(saved.vlog.views>initial);assert.equal(saved.vlog.views,saved.vlog.posts[0].views);saved.vlog.monetized=true;advanceAudience(saved,1000);assert.equal(saved.vlog.posts[0].subs,p.audience.targetSubs);assert.equal(saved.vlog.posts[0].comments.length,4);const totals=JSON.stringify([saved.money,saved.vlog.views,saved.vlog.earned]);advanceAudience(saved,1000);assert.equal(JSON.stringify([saved.money,saved.vlog.views,saved.vlog.earned]),totals,'finished posts cannot credit twice');
+assert.equal(renameLegacy({name:'Aster 13 mini · батарея'}).name,'iPhone 13 mini · батарея');assert.equal(renameLegacy({name:'Qubo Neo 10'}).name,'iQOO Neo 10');assert.equal(renameLegacy({name:'Карманный геймпад · батарея'}).name,'8BitDo Micro · батарея');assert.match(deviceOS({name:'iPhone 13 mini'}),/iOS/);assert.match(deviceOS({name:'iQOO Neo 10'}),/Android/);assert.match(deviceOS({name:'realme GT Neo 6'}),/Android/);assert.equal(deviceOS({kind:'portable'}),'SteamOS 3');
+const pc=fresh();pc.pc.owned=true;assert.equal(buyUpgrade(pc,'ram'),true);assert.equal(pc.pc.ram,0);assert.equal(pc.pc.pending.ram,1);assert.equal(pc.money,2800);assert.equal(buyUpgrade(pc,'ram'),true);assert.equal(buyUpgrade(pc,'ram'),false);assert.equal(buyUpgrade(pc,'unknown'),false);
+console.log('PASS: gradual views/likes/comments/subscribers, save-resume, no duplicate income; device names/OS and purchased PC parts');

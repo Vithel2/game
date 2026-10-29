@@ -1,6 +1,6 @@
 {
   "name": "s-ruk-game",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "test:navigation": "node tests/navigation.test.mjs",
     "test:gadgets": "node tests/gadgets.e2e.mjs",
     "test:life": "node tests/life.test.mjs",
-    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/perekup-second-chance-0.10.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
+    "test:offline": "python3 tools/package_game.py && python3 -c \"from zipfile import ZipFile; ZipFile('releases/perekup-second-chance-0.11.zip').extract('play.html','/tmp/s-ruk-offline-check')\" && cp /tmp/s-ruk-offline-check/play.html /tmp/s-ruk-offline-check/index.html && node tests/offline.e2e.mjs",
     "test:resume": "node tests/resume.e2e.mjs",
     "test:progression": "node tests/progression.test.mjs",
     "test:season": "node tests/season-smoke.e2e.mjs",
@@ -42,7 +42,9 @@
     "build:windows": "npm run package:offline && python3 tools/build_windows.py",
     "test:parcels9": "node tests/parcel9.e2e.mjs",
     "compose:release9": "python3 tools/compose_videos_09.py trailer && python3 tools/compose_videos_09.py tutorial",
-    "test:mobile-ui": "node tests/mobile10.e2e.mjs && node tests/mobile10-start.e2e.mjs && node tests/mobile10-dialog.e2e.mjs"
+    "test:mobile-ui": "node tests/mobile10.e2e.mjs && node tests/mobile10-start.e2e.mjs && node tests/mobile10-dialog.e2e.mjs",
+    "test:release11": "node tests/release11.test.mjs",
+    "test:release11-browser": "node tests/release11.e2e.mjs && node tests/house11.e2e.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

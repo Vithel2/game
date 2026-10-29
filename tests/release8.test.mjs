@@ -7,7 +7,7 @@ for(const difficulty of ['quick','standard','advanced','expert']){
  const p={difficulty,diagnosed:true,out:screwMask({difficulty}),warmed:true,open:true,disconnected:connectorMask({difficulty}),cleaned:true,removed:true,installed:true,soldered:true,connected:connectorMask({difficulty})};
  assert.equal(stageFor(p),'tighten');p.inside=screwMask(p);assert.equal(stageFor(p),['advanced','expert'].includes(difficulty)?'seal':'close');p.sealed=true;assert.equal(stageFor(p),'close');p.closed=true;p.calibrated=true;assert.equal(stageFor(p),'test');p.fixed=true;assert.equal(stageFor(p),'done');
 }
-assert.equal(renameLegacy({name:'R / 02 · после дождя'}).name,'Qubo Neo 10 · после дождя');
+assert.equal(renameLegacy({name:'R / 02 · после дождя'}).name,'iQOO Neo 10 · после дождя');
 assert.equal(handset({name:'Qubo Neo 10'}).ram,12);
 assert.equal(diagnosticReport({defect:'charge'}).watts,0);
 assert.equal(diagnosticReport({name:'Qubo Neo 10',defect:'charge'},true).watts,120);

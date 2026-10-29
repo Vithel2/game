@@ -16,6 +16,7 @@ export function installCitizens(w){
    let moving=false;if(n.route.length){const goal=n.route[0],delta=new T.Vector3(goal.x-n.actor.position.x,0,goal.z-n.actor.position.z);if(delta.length()<.10)n.route.shift();else{
     const velocity=delta.clone().normalize().multiplyScalar(n.speed),others=[...list.filter(o=>o!==n&&o.actor.visible).map(o=>o.actor),...(w.mode===n.zone?[w.avatar]:[])];
     for(const actor of others){const away=n.actor.position.clone().sub(actor.position);away.y=0;const d=away.length();if(d<.70&&d>.001){const push=away.multiplyScalar((.70-d)/(d*.70));velocity.addScaledVector(push,.85);if(d<.37&&velocity.dot(delta)>0){const side=new T.Vector3(-delta.z,0,delta.x).normalize().multiplyScalar(n.id%2?1:-1);velocity.multiplyScalar(.15).addScaledVector(side,.38)}}}
+    n.velocity||=new T.Vector3();n.velocity.lerp(velocity,1-Math.exp(-dt*5));velocity.copy(n.velocity).clampLength(0,n.speed*1.2);
     const p=slide(n.zone,{x:n.actor.position.x,z:n.actor.position.z},{x:n.actor.position.x+velocity.x*dt,z:n.actor.position.z+velocity.z*dt},.16);const dx=p.x-n.actor.position.x,dz=p.z-n.actor.position.z;moving=false;if(faceTravel(n.actor,dx,dz,dt)){moving=Math.hypot(dx,dz)>.002;n.actor.position.x=p.x;n.actor.position.z=p.z;}
 
    }}

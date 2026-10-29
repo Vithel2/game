@@ -18,7 +18,7 @@ export class Features{
  }
  handle(action,id,el){
   const s=this.state(),w=this.world(),b=this.button,i=this.icon;
-  if(action==='meet'&&!s.training.complete&&!s.phones.some(p=>!p.client&&!p.sold)&&!String(id).endsWith('-a')){this.toast('Для первой сделки возьми Aster 13 mini с изношенным аккумулятором.');return true;}
+  if(action==='meet'&&!s.training.complete&&!s.phones.some(p=>!p.client&&!p.sold)&&!String(id).endsWith('-a')){this.toast('Для первой сделки возьми iPhone 13 mini с изношенным аккумулятором.');return true;}
   if(action==='start'&&!s.profile.created){this.story=0;this.open('prologue');return true;}
   if(action==='storyNext'){this.story++;this.open(this.story<3?'prologue':'character');return true;}
   if(action==='gender'){s.profile.gender=el.dataset.gender;this.open('character');return true;}

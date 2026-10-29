@@ -190,3 +190,30 @@
  .mobile-ui .start-card h1{font-size:24px;margin:12px 0}
  .mobile-ui .start-card p{font-size:12px;margin:10px 0}
 }
+
+/* Compact visual labels; the surrounding touch area remains generous. */
+.mobile-ui .hotspot,.mobile-ui .hotspot[data-action="addFood"],.mobile-ui .hotspot[data-action="liftParcel"]{min-height:32px;min-width:32px;max-width:120px;padding:5px 8px;font-size:12px;line-height:1.15;border-radius:9px}
+.mobile-ui .hotspot svg{width:14px;height:14px}
+.mobile-ui .hotspot::before{content:'';position:absolute;inset:-6px 0;z-index:-1}
+.mobile-ui .hotspot.screw-target,.mobile-ui .hotspot.connector-target{width:36px;height:36px;min-height:36px;min-width:36px;max-width:36px;font-size:14px;padding:0}
+.mobile-ui .dock-actions>.btn{min-height:44px;max-height:48px;flex-direction:row;font-size:12px;padding:5px;gap:5px}
+.mobile-ui .dock-actions svg{width:19px;height:19px;flex:none}
+.mobile-ui .dock-actions>.btn:has(span){flex-direction:column;gap:1px}
+.mobile-ui #dock{padding-top:5px;gap:4px}
+.mobile-ui #touch-header{padding-top:max(5px,env(safe-area-inset-top));gap:4px 8px}
+.mobile-ui #guided-training,.mobile-ui #objective{padding:6px 9px}
+.mobile-ui #objective strong,.mobile-ui #guided-training strong{font-size:14px}
+.mobile-ui .journal-tabs{padding-right:44px;flex-wrap:wrap}
+.mobile-ui .journal-tabs .btn{min-width:60px;padding:7px;font-size:12px}
+.mobile-ui .hardware-card>img,.mobile-ui .hardware-card>.product-thumb{width:72px;height:72px;object-fit:contain;flex:none}
+.device-os{color:#3b766d!important;font-weight:800}
+.audience-live{color:#367755!important}
+.audience-comments{background:#e6eee3;border-radius:12px;padding:8px 12px;margin:12px 0}
+.audience-comments p{font-size:13px!important;margin:8px 0}
+.calendar-modal.is-new{animation:calendarReveal .26s cubic-bezier(.2,.8,.2,1)!important;transform-origin:50% 60%}
+.calendar-leaving{pointer-events:none!important;z-index:60!important;animation:calendarFade .24s ease-in forwards!important}
+.calendar-leaving .modal{animation:calendarHide .24s ease-in forwards!important}
+@keyframes calendarReveal{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes calendarHide{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(12px) scale(.96)}}
+@keyframes calendarFade{to{opacity:0}}
+@media(prefers-reduced-motion:reduce){.calendar-modal.is-new,.calendar-leaving,.calendar-leaving .modal{animation-duration:.01s!important}}

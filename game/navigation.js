@@ -22,5 +22,5 @@ export function pathfind(zone,from,to,r=.17){
  const route=[];for(let j=goal;j!==start&&j!==-1;j=prev.get(j))route.push(point(j));route.push(point(start));route.reverse();
  if(!blocked(zone,to.x,to.z,r))route.push({x:to.x,z:to.z});
  // Remove collinear grid points, preserving corners so furniture is never cut through.
- return route.filter((p,i,a)=>i===0||i===a.length-1||Math.abs((p.x-a[i-1].x)*(a[i+1].z-p.z)-(p.z-a[i-1].z)*(a[i+1].x-p.x))>.0001);
+ const smooth=[];let anchor=from;for(let i=0;i<route.length;){let last=i;for(let j=i+1;j<route.length;j++){if(!clear(anchor,route[j]))break;last=j;}smooth.push(route[last]);anchor=route[last];i=last+1;}return smooth;
 }

@@ -6,7 +6,7 @@ export const QUESTS=[
  {id:'first-sale',title:'Вторая жизнь',who:'Лев · сосед-мастер',text:'Полностью восстанови и продай первый телефон.',reward:300,ready:s=>s.sold>=1},
  {id:'lunch',title:'Обед по расписанию',who:'Тамара · Пятак',text:'Возьми корзину, выбери продукты на полках и оплати покупки у Тамары.',reward:100,ready:s=>s.stats.groceryVisits>0&&s.stats.foodBuys>0},
  {id:'workbench',title:'Рабочее место решает',who:'Лев · сосед-мастер',text:'Улучши ремонтный стол через инвентарь.',reward:250,ready:s=>s.upgrade},
- {id:'computer',title:'Не только телефоны',who:'Маша · Azon',text:'Купи комплект ПК и поставь его дома.',reward:250,ready:s=>s.pc.owned},
+ {id:'computer',title:'Не только телефоны',who:'Техноточка',text:'Купи комплект ПК и поставь его дома.',reward:250,ready:s=>s.pc.owned},
  {id:'ram',title:'Памяти много не бывает',who:'Денис · любитель железа',text:'Установи в свой ПК первый комплект оперативной памяти.',reward:200,ready:s=>s.pc.ram>=1},
  {id:'phone-game',title:'Пять минут отдыха',who:'Денис · любитель железа',text:'Набери 5 очков в «Лови сигнал» на игровом телефоне.',reward:100,ready:s=>s.records.phone>=5},
  {id:'pc-game',title:'Ночная доставка',who:'Маша · Azon',text:'Набери 100 очков в «Ночном курьере» на своём ПК.',reward:300,ready:s=>s.records.pc>=100},
