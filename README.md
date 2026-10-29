@@ -3,14 +3,14 @@
 **Из чужого хлама — в своё дело.** Офлайн-игра о ремонте, сделках и возвращении к своему бизнесу. Разработчик: **Vithel**. Создано с помощью **GPT-6.1 Sol**.
 
 - **[Установщик Windows 10/11 x64](releases/Perekup-0.12-Setup.exe)** · **[Портативная версия с EXE](releases/perekup-0.12-windows-portable.zip)** · [Требования и сборка](docs/windows-build.md).
-- **[Скачать APK для Android](releases/perekup-0.12-debug.apk)** — тестовая установка, Android 8.0+ и WebView с WebGL 2. [Как собирать и подписывать](docs/android-build.md).
+- **[Скачать release APK для Android](releases/perekup-0.12-release.apk)** — постоянная подпись, Android 8.0+ и WebView с WebGL 2. [Как собирать и подписывать](docs/android-build.md).
 - **[Скачать браузерную игру 0.12](releases/perekup-second-chance-0.12.zip)** — распаковать и открыть `play.html`.
 - **[Материалы для магазина одним архивом](releases/perekup-media-0.7.zip)** — открыть `index.html` внутри архива для просмотра.
 - **[Трейлер версии 0.9 · 1080p / 60 fps](marketing/0.9/trailer-1080p60.mp4)** · **[Видео прохождения обучения](marketing/0.9/tutorial.mp4)** · [Иконка](marketing/0.7/icon-512.png) · [Мобильные кадры](marketing/0.7/mobile/) · [ПК-кадры](marketing/0.7/pc/) · [Описание для RuStore](marketing/0.7/ru-store-listing.md).
 
-[Комплект 0.12 для скачивания](releases/perekup-0.12-public.zip) · [Debug APK](releases/perekup-0.12-debug.apk) · [Установщик Windows](releases/Perekup-0.12-Setup.exe) · [Windows portable](releases/perekup-0.12-windows-portable.zip) · [Браузерный архив](releases/perekup-second-chance-0.12.zip).
+[Комплект 0.12 для скачивания](releases/perekup-0.12-public.zip) · [Release APK](releases/perekup-0.12-release.apk) · [Установщик Windows](releases/Perekup-0.12-Setup.exe) · [Windows portable](releases/perekup-0.12-windows-portable.zip) · [Браузерный архив](releases/perekup-second-chance-0.12.zip).
 
-Debug APK предназначен для тестирования. Подписанный store APK через GitHub Actions пока не подготовлен.
+Release APK подписан постоянным ключом Vithel; подпись и отсутствие отладочного режима проверены. [Рекламные карточки и баннер](releases/perekup-0.12-promo.zip). GitHub Actions Secrets для будущих сборок ещё нужно настроить.
 
 ## Что изменилось в 0.12
 

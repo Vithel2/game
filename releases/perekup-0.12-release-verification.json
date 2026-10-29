@@ -1,0 +1,10 @@
+{
+  "artifact": "perekup-0.12-release.apk",
+  "sha256": "13fb2602b41e846de16bed4f859d34c3b4eba7c9a95d59e0512e01f8f44e696d",
+  "signer_sha256": "4a743b2e5e98b794a07c09e9ab83f7dabb1e1413c2e27391929fb0499295fdcf",
+  "signer_matches_saved_permanent_key": true,
+  "debuggable": false,
+  "version": "0.12.0",
+  "versionCode": 1200,
+  "built": "Cordova release, locally signed with permanent key"
+}
