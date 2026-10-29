@@ -29,6 +29,7 @@ export class Features{
   if(action==='finishTraining'){s.training.complete=true;this.persist();this.toast('Обучение завершено. Теперь весь район открыт.');return true;}
   if(action==='trainingMove'){w.walkTo([0,.05,.50],()=>{s.training.moved=true;this.persist()});return true;}
   if(action==='toolFromTable'){s.training.tools ||= {};s.training.tools[id]=true;this.setTool(id);this.persist();return true;}
+  if(action==='tool'&&w.mobileInterface){s.training.tools||={};s.training.tools[el.dataset.tool]=true;return false;}
   if(action==='tool'&&el.dataset.tool!=='hand'&&!s.training.complete&&!s.training.tools?.[el.dataset.tool]){this.toast('Сначала нажми на сам подсвеченный инструмент на коврике.');return true;}
   if(action==='sleep'){
    this.close();w.performLife('sleep',()=>{s.day++;s.time=540;s.energy=100;s.hp=Math.min(100,s.hp+15);s.food=Math.max(0,s.food-18);s.water=Math.max(0,s.water-22);s.daily={day:s.day,inspections:0,sold:0,foodBuys:0};s.stock={battery:2,charge:1,display:0};this.persist();this.toast('Доброе утро, '+s.profile.name+'. День '+s.day)});return true;
@@ -85,7 +86,7 @@ export class Features{
   }
   if(t.id==='repair'){
    const p=s.phones.find(p=>!p.client&&!p.sold);if(document.querySelector('[data-action="collect"]'))selector='[data-action="collect"]';else if(document.querySelector(`[data-action="order"][data-id="${p.defect}"]`))selector=`[data-action="order"][data-id="${p.defect}"]`;else if(document.querySelector('[data-action="sleep"]'))selector='[data-action="sleep"]';else if(document.querySelector('[data-action="repairPhone"]'))selector='[data-action="repairPhone"]';else if(document.querySelector('.phone-modal')&&s.orders.some(o=>!o.picked))selector='.modal-close';else if(w.mode==='repair'){
-    const stage=repairStage(p);if(w.requiredTool&&this.tool()!==w.requiredTool)selector=`[data-action="toolFromTable"][data-tool="${w.requiredTool}"]`;
+    const stage=repairStage(p);if(w.requiredTool&&this.tool()!==w.requiredTool)selector=`[data-action="${w.mobileInterface?'tool':'toolFromTable'}"][data-tool="${w.requiredTool}"]`;
     else selector=stage==='screws'||stage==='tighten'?'[data-action="screw"]':stage==='disconnect'||stage==='connect'?'[data-action="connector"]':stage==='remove'?'[data-action="remove"]':stage==='install'?'[data-action="install"]':`[data-action="${stage}"]`;
     if(stage==='install'&&!s.parts[p.defect]&&s.orders.some(o=>!o.picked&&o.part===p.defect))selector='[data-action="leaveRepair"]';
    }else if(document.querySelector('[data-action="order"]'))selector=`[data-action="order"][data-id="${p.defect}"]`;

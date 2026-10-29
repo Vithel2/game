@@ -10,8 +10,8 @@ using Microsoft.Web.WebView2.WinForms;
 [assembly: AssemblyTitle("Перекуп: второй шанс")]
 [assembly: AssemblyCompany("Vithel")]
 [assembly: AssemblyProduct("Перекуп: второй шанс")]
-[assembly: AssemblyVersion("0.9.0.0")]
-[assembly: AssemblyFileVersion("0.9.0.0")]
+[assembly: AssemblyVersion("0.10.0.0")]
+[assembly: AssemblyFileVersion("0.10.0.0")]
 internal sealed class GameWindow : Form {
     private readonly WebView2 view = new WebView2();
     private readonly Label loading = new Label();

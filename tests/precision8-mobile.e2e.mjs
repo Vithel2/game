@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {harness,seed,ready,click,idle} from './browser-harness.mjs';
 const h=await harness();await h.page.close();const p=await h.browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});const c=s=>click(p,s);const errors=[];p.on('pageerror',e=>errors.push(e.message));
-try{await seed(p,{day:8,time:600,phones:[{id:6,name:'Qubo Neo 10',difficulty:'advanced',defect:'charge',diagnosed:true,out:1023}]});await p.goto(h.url);await ready(p);await c('[data-action="start"]');await c('#dock [data-action="bench"]');await c('[data-action="repairPhone"]');await c('[data-action="tool"][data-tool="heater"]');await c('.hotspot[data-action="heat"]');
+try{await seed(p,{day:8,time:600,phones:[{id:6,name:'Qubo Neo 10',difficulty:'advanced',defect:'charge',diagnosed:true,out:1023}]});await p.goto(h.url);await ready(p);await c('[data-action="start"]');await c('#dock [data-action="bench"]');await c('[data-action="repairPhone"]');await c('[data-action="tool"][data-tool="heater"]');await c('.mobile-repair-action[data-action="heat"]');
  await p.waitForTimeout(350);
  await p.evaluate(()=>{document.addEventListener('pointerdown',e=>{if(e.target.closest('[data-action="skillHit"]')){const n=document.querySelector('.skill-needle').getBoundingClientRect(),z=document.querySelector('.skill-zone').getBoundingClientRect(),x=(n.left+n.right)/2;window.lastPrecisionPress={green:x>=z.left-2&&x<=z.right+2,target:e.target.closest('[data-action]').dataset.action}}},true)});
  const b=await p.locator('[data-action="skillHit"]').boundingBox();let hits=0;

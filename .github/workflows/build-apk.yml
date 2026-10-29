@@ -38,7 +38,7 @@ jobs:
         working-directory: android-app
       - uses: actions/upload-artifact@v4
         with:
-          name: Perekup-0.9-test-APK
+          name: Perekup-0.10-test-APK
           path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       # A store release must use the developer's permanent private signing key.
@@ -63,6 +63,6 @@ jobs:
           npx cordova build android --release --no-telemetry --buildConfig=build-signing.json
       - uses: actions/upload-artifact@v4
         with:
-          name: Perekup-0.9-store-APK
+          name: Perekup-0.10-store-APK
           path: android-app/platforms/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: ignore

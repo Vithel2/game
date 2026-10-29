@@ -1,0 +1,192 @@
+/* A measured world viewport keeps touch controls and notices out of the scene. */
+#world-view{position:absolute;inset:0;min-width:0;min-height:0}
+#touch-header,#touch-notices,#touch-repair-action{display:none}
+#hotspot-links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:hidden}
+#hotspot-links path{stroke:#456f72;stroke-width:1.2;fill:none;opacity:.65}
+#hotspot-links circle{fill:#f5b45d;stroke:#354e58;stroke-width:1}
+.need-value{display:none}
+.mobile-ui{
+ --touch-gap:8px;--safe-top:max(8px,env(safe-area-inset-top));--safe-bottom:max(8px,env(safe-area-inset-bottom));
+ width:100%;height:var(--app-height,100dvh);max-height:100dvh;overflow:hidden;
+ display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 36px auto;
+ background:#d4e0d9;padding:0;gap:0;
+}
+.mobile-ui #touch-header{grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;padding:var(--safe-top) 8px 6px;z-index:6;min-width:0;background:#eaf0e5}
+.mobile-ui #hud{display:contents!important;position:static;pointer-events:auto}
+.mobile-ui .hud-left{grid-column:1/-1;grid-row:1;display:flex;gap:8px;min-width:0;align-items:center}
+.mobile-ui .hud-left .pill{height:32px;padding:0 10px;border:0;border-radius:10px;font:800 14px Nunito,sans-serif;gap:6px;box-shadow:none;min-width:0}
+.mobile-ui .hud-left .pill svg{width:18px;height:18px}
+.mobile-ui .hud-left .day{display:flex!important;margin-left:auto;font-size:12px;white-space:nowrap}
+.mobile-ui .hud-right{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(4,44px);gap:4px;align-items:center}
+.mobile-ui .square{height:44px;width:44px;min-height:44px;border-radius:12px;border-width:1px;box-shadow:none;padding:10px}
+.mobile-ui .square svg{width:23px;height:23px}
+.mobile-ui #needs{grid-column:1;grid-row:2;position:static;left:auto;top:auto;margin:0;width:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:center;gap:3px 6px;padding:3px 5px;background:#dbe7dc;border:0;box-shadow:none;border-radius:10px}
+.mobile-ui .need{gap:4px;min-width:0;justify-content:center}
+.mobile-ui #needs .need svg{width:15px;height:15px;color:#416a68}
+.mobile-ui .need-value{display:inline;font:800 12px Nunito,sans-serif;color:#31525b;font-variant-numeric:tabular-nums}
+.mobile-ui .need>div{display:none}
+.mobile-ui #touch-hints{grid-column:1/-1;grid-row:3;min-width:0}
+.mobile-ui #touch-hints:empty{display:none}
+.mobile-ui #objective,.mobile-ui #guided-training,.mobile-ui #repair-guide,.mobile-ui #parcel-task{
+ position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;transform:none!important;
+ max-width:none;width:100%;margin:0;padding:8px 11px;border-radius:12px;border:1px solid #a0b3a4;box-shadow:none;
+ font:600 13px/1.4 Nunito,sans-serif;z-index:auto;background:#fff9e8;
+}
+.mobile-ui #objective .eyebrow,.mobile-ui #guided-training>span{font:800 10px/1.3 Nunito,sans-serif;letter-spacing:.8px}
+.mobile-ui #objective strong,.mobile-ui #guided-training strong{font:800 15px/1.25 Nunito,sans-serif;margin:3px 0}
+.mobile-ui #objective small,.mobile-ui #guided-training p{font:600 13px/1.35 Nunito,sans-serif;color:#425c5d;margin:0}
+.mobile-ui #guided-training .btn{margin-top:6px;width:100%}
+.mobile-ui #objective{pointer-events:none}
+.mobile-ui.is-repair #guided-training,.mobile-ui.is-repair #objective{display:none!important}
+.mobile-ui #repair-guide{gap:9px;align-items:center;flex-wrap:nowrap;pointer-events:none}
+.mobile-ui #repair-guide .step-number{width:29px;height:29px;flex:none;border-radius:9px;font-size:13px}
+.mobile-ui #repair-guide>div{min-width:0;flex:1}
+.mobile-ui #repair-guide strong{font:800 15px/1.25 Nunito,sans-serif}
+.mobile-ui #repair-guide small{font:600 13px/1.35 Nunito,sans-serif;color:#425c5d;margin-top:3px}
+.mobile-ui #repair-guide>.btn{display:none}
+.mobile-ui #parcel-task.show{display:grid;gap:3px;animation:none;background:#e5f0ff;border-color:#76a1bb}
+.mobile-ui #parcel-task b{font-size:16px;line-height:1.3}
+.mobile-ui #parcel-task span{font-size:13px}
+.mobile-ui #touch-hints:has(#parcel-task.show) #objective{display:none!important}
+.mobile-ui #world-view{grid-row:2;position:relative;inset:auto;overflow:hidden;min-height:0;width:100%;height:100%;isolation:isolate}
+.mobile-ui #scene{width:100%;height:100%;display:block}
+.mobile-ui #touch-notices{grid-row:3;display:flex;align-items:center;justify-content:center;min-width:0;padding:2px 10px;background:#e6eee3;z-index:7;overflow:hidden}
+.mobile-ui #toast,.mobile-ui #life-caption{
+ position:static!important;left:auto;top:auto;bottom:auto;right:auto;transform:none!important;width:100%;min-width:0;max-width:100%;margin:0;
+ display:none;padding:3px 4px;border:0;border-radius:0;box-shadow:none;opacity:1;pointer-events:none;background:transparent;
+ color:#33545b;font:700 13px/1.25 Nunito,sans-serif;text-align:center;white-space:normal;animation:none;transition:none;overflow:hidden;
+}
+.mobile-ui #toast.show,.mobile-ui #life-caption.show{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mobile-ui #touch-notices.has-toast #life-caption{display:none}
+.mobile-ui #dock{
+ grid-row:4;position:static!important;left:auto;bottom:auto;transform:none!important;display:flex;min-width:0;width:100%;max-width:none;
+ margin:0;padding:8px 8px var(--safe-bottom);border:0;border-top:1px solid #b1c2b7;border-radius:0;box-shadow:none;gap:6px;background:#f3f5e9;z-index:8;
+}
+.mobile-ui .btn{font:800 14px/1.3 Nunito,sans-serif;min-height:44px;border-width:1px;padding:10px 12px;gap:7px;box-shadow:none;overflow-wrap:anywhere}
+.mobile-ui .btn.compact{min-width:44px;font-size:20px}
+.mobile-ui .btn.subtle{font-size:13px;min-height:36px;padding:6px 10px}
+.mobile-ui #dock .control-hint{display:none}
+.mobile-ui .dock-actions{width:100%;min-width:0;gap:6px}
+.mobile-ui .dock-actions>.btn{min-width:0;min-height:58px;flex:1;gap:3px;font-size:12px;padding:6px 5px;border-radius:12px}
+.mobile-ui .dock-actions svg{width:23px;height:23px}
+.mobile-ui #touch-repair-action{display:block;width:100%}
+.mobile-ui #touch-repair-action .btn{margin:0;width:100%;min-height:48px;max-height:70px;line-height:1.25;font-size:15px;border-radius:12px}
+.mobile-ui .tools{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-items:stretch}
+.mobile-ui .tools:has(.tool:nth-child(5)){grid-template-columns:repeat(5,minmax(0,1fr))}
+.mobile-ui .tool{font:800 12px/1.1 Nunito,sans-serif;min-width:0;min-height:52px;padding:5px 2px;gap:4px;justify-content:center;border-radius:10px;overflow-wrap:anywhere}
+.mobile-ui .tool svg{width:23px;height:23px}
+.mobile-ui .tool.required{outline:2px solid #dc963d;outline-offset:-2px;background:#ffe4b9}
+.mobile-ui .tool.active{background:#cfe4d3;box-shadow:inset 0 0 0 2px #658b77}
+.mobile-ui #dock>[data-action="leaveRepair"]{margin:0;align-self:center;min-height:34px;padding:4px 12px;color:#426068}
+.mobile-ui .hotspot,.mobile-ui .hotspot[data-action="addFood"],.mobile-ui .hotspot[data-action="liftParcel"]{
+ max-width:min(145px,45vw);min-height:44px;min-width:44px;padding:7px 10px;border-width:1px;border-radius:11px;gap:5px;
+ font:800 13px/1.2 Nunito,sans-serif;white-space:normal;text-align:center;justify-content:center;color:#2c515a;background:#fffdf1;box-shadow:0 2px 5px #254e4c22;
+}
+.mobile-ui .hotspot svg{width:17px;height:17px}
+.mobile-ui .hotspot.screw-target,.mobile-ui .hotspot.connector-target{width:44px;height:44px;max-width:44px;padding:0;font-size:16px;box-shadow:0 0 0 3px #dba85055}
+.mobile-ui .hotspot.screw-target{color:#fff;background:#427c69}
+.mobile-ui .hotspot.connector-target{background:#f4d28e}
+.mobile-ui .hotspot:after{display:none}
+.mobile-ui #hotspots{overflow:hidden}
+.mobile-ui #objective.hidden,.mobile-ui #guided-training.hidden,.mobile-ui #dock.hidden{display:none!important}
+.mobile-ui.has-modal #touch-header,.mobile-ui.has-modal #dock,.mobile-ui.has-modal #touch-notices{visibility:hidden;pointer-events:none}
+.mobile-ui.has-modal #life-caption{display:none}
+.mobile-ui .scrim{position:absolute;inset:0;padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom));align-items:center;justify-content:center;background:#1d3945e8;z-index:25;overflow:hidden;backdrop-filter:none}
+.mobile-ui .modal{
+ width:100%;max-width:520px;max-height:100%;min-height:0;margin:0;padding:20px 16px 16px;border-radius:18px;border:1px solid #a0b4aa;box-shadow:none;
+ overflow-y:auto;overscroll-behavior:contain;scroll-padding-top:58px;animation:none;font-size:14px;
+}
+.mobile-ui .modal .modal-close{width:44px;height:44px;right:8px;top:8px;border-radius:12px;box-shadow:none;padding:11px;background:#fffef3;z-index:4}
+.mobile-ui .modal-close svg{width:20px;height:20px}
+.mobile-ui .modal>h2,.mobile-ui .modal>h3,.mobile-ui .modal>.eyebrow{max-width:calc(100% - 42px)}
+.mobile-ui .modal h2{font-size:24px;line-height:1.2;letter-spacing:-.4px;margin:12px 0 16px}
+.mobile-ui .modal p{font-size:14px;line-height:1.5;color:#46616a}
+.mobile-ui .modal small{font-size:12px;line-height:1.4}
+.mobile-ui .modal-training{margin:0 42px 12px 0;border:1px solid #d4bc89;padding:8px 10px;border-radius:10px;background:#fff1cb;color:#53625b;font:700 12px/1.35 Nunito,sans-serif}
+.mobile-ui .modal-training summary{cursor:pointer;min-height:28px;display:list-item}
+.mobile-ui .modal-training p{font-size:13px;margin:8px 0 0}
+.mobile-ui .app-body .modal-training,.mobile-ui .phone-wallpaper .modal-training{margin:0 0 12px}
+.mobile-ui .modal-notice{flex:none;min-width:0}
+.mobile-ui .modal-notice:has(#toast.show){padding:9px 5px;margin-top:8px;background:#e2eee0;border-radius:10px}
+.mobile-ui .phone-modal{max-width:520px;height:100%;min-height:0;max-height:100%;padding:0;border:0;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.mobile-ui .phone-modal .phone-status{height:52px;min-height:52px;padding:14px 62px 14px 18px;font-size:13px;flex:none}
+.mobile-ui .phone-modal .phone-status b{font-size:12px}
+.mobile-ui .phone-modal .app-header{padding:15px 16px;flex:none}
+.mobile-ui .phone-modal .app-header h2{font-size:28px;max-width:100%;margin:0}
+.mobile-ui .phone-modal .app-header p{font-size:13px;line-height:1.4;margin:3px 0 0}
+.mobile-ui .phone-modal .app-body,.mobile-ui .phone-modal .phone-wallpaper{padding:14px;min-height:0;flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain}
+.mobile-ui .phone-wallpaper h2{font-size:25px;margin:15px 0 22px}
+.mobile-ui .app-grid{gap:16px 8px}
+.mobile-ui .app-grid button{font-size:13px;min-height:80px;gap:6px}
+.mobile-ui .app-grid b{width:58px;height:58px;font-size:28px;border-radius:17px}
+.mobile-ui .phone-extra-apps{gap:6px}
+.mobile-ui .phone-extra-apps button{font-size:12px;min-height:50px}
+.mobile-ui .phone-nav{padding:5px;gap:4px;position:static;flex:none;min-height:62px}
+.mobile-ui .phone-nav button{font-size:12px;min-height:52px;min-width:0;padding:6px 3px;gap:3px}
+.mobile-ui .phone-nav svg{width:22px;height:22px}
+.mobile-ui .listing{padding:12px;gap:10px}
+.mobile-ui .listing strong{font-size:14px;line-height:1.35}
+.mobile-ui .listing small{font-size:12px;line-height:1.4}
+.mobile-ui .listing p{font-size:13px;line-height:1.4}
+.mobile-ui .listing .btn{font-size:13px;min-height:44px;padding:9px}
+.mobile-ui .listing .product-thumb{width:60px;min-width:60px;height:82px}
+.mobile-ui .listing .listing-price{font-size:21px}
+.mobile-ui .catalog-item strong{font-size:14px}
+.mobile-ui .catalog-item small{font-size:12px}
+.mobile-ui .catalog-item .product-thumb{width:50px;min-width:50px}
+.mobile-ui .notice,.mobile-ui .note{font-size:13px!important;line-height:1.4!important}
+.mobile-ui .journal-tabs{position:static;overflow-x:auto;max-width:100%;padding:4px 0 12px;gap:5px;flex-wrap:nowrap}
+.mobile-ui .journal-tabs .btn{flex:1;min-width:75px;font-size:13px}
+.mobile-ui input,.mobile-ui textarea,.mobile-ui select{font-size:16px;min-height:44px;max-width:100%}
+.mobile-ui .skill-meter{height:60px;margin:22px 0}
+.mobile-ui .work-scrim{padding:8px!important;align-items:center!important;justify-content:center!important;background:#1d3945e8!important;pointer-events:auto}
+.mobile-ui .work-modal{max-width:520px;width:100%;max-height:100%;pointer-events:auto}
+.mobile-ui .channel-modal{width:100%;padding:20px 14px 14px}
+.mobile-ui .site-browser{padding-right:42px;flex-wrap:wrap}
+.mobile-ui .site-address{font-size:11px;overflow-wrap:anywhere;min-width:0}
+.mobile-ui .channel-stats{gap:5px}
+.mobile-ui .channel-stats b{font-size:18px}
+.mobile-ui .channel-stats small{font-size:11px}
+.mobile-ui .nickname{font-size:16px}
+.mobile-ui #title{z-index:12}
+.mobile-ui.on-title{display:block}
+.mobile-ui.on-title #world-view{position:absolute;inset:0;width:100%;height:100%}
+.mobile-ui.on-title #touch-header,.mobile-ui.on-title #touch-notices{display:none}
+.mobile-ui .start-card{bottom:max(15px,env(safe-area-inset-bottom));padding:22px;max-width:calc(100% - 28px);width:360px}
+.mobile-ui .start-card h1{font-size:28px}
+.mobile-ui .edition{display:none}
+.mobile-ui #recording-viewfinder{inset:18% 6% 25%;z-index:5}
+@media (orientation:landscape) and (max-height:600px){
+ .mobile-ui{grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:auto minmax(0,1fr) 36px}
+ .mobile-ui #touch-header{grid-area:1/1/2/3;grid-template-columns:minmax(0,1fr) 110px auto;padding-top:max(4px,env(safe-area-inset-top));gap:4px 8px}
+ .mobile-ui .hud-left{grid-area:1/1;gap:6px}
+ .mobile-ui .hud-left .day{display:none!important}
+ .mobile-ui .hud-right{grid-area:1/3;gap:4px}
+ .mobile-ui #needs{grid-area:1/2}
+ .mobile-ui #touch-hints{grid-row:2;grid-column:1/-1}
+ .mobile-ui #repair-guide{padding:6px 10px}
+ .mobile-ui #repair-guide strong{font-size:14px}
+ .mobile-ui #repair-guide small{font-size:12px}
+ .mobile-ui #guided-training strong{display:inline;font-size:14px;margin:0 8px}
+ .mobile-ui #guided-training>span{display:inline}
+ .mobile-ui #guided-training p{font-size:12px}
+ .mobile-ui #world-view{grid-area:2/1/4/2}
+ .mobile-ui #dock{grid-area:2/2/3/3;align-self:stretch;justify-content:center;border-top:0;border-left:1px solid #b1c2b7;padding:7px;overflow-y:auto}
+ .mobile-ui #touch-notices{grid-area:3/2/4/3;font-size:12px;padding:2px 5px}
+ .mobile-ui .dock-actions{display:grid;grid-template-columns:1fr;gap:7px}
+ .mobile-ui .dock-actions>.btn{flex-direction:row;min-height:44px;font-size:13px}
+ .mobile-ui .tools,.mobile-ui .tools:has(.tool:nth-child(5)){grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobile-ui .tool{min-height:44px;font-size:12px;flex-direction:row;gap:6px}
+ .mobile-ui #dock>[data-action="leaveRepair"]{min-height:32px;font-size:12px}
+ .mobile-ui .modal{max-width:680px}
+ .mobile-ui .phone-modal{max-width:620px}
+ .mobile-ui .phone-status{height:44px;min-height:44px}
+ .mobile-ui .app-header{padding:8px 14px}
+ .mobile-ui .phone-nav{min-height:48px;padding:2px 5px}
+ .mobile-ui .phone-nav button{min-height:44px;flex-direction:row;justify-content:center;gap:6px}
+ .mobile-ui.on-title #world-view{position:absolute;inset:0}
+ .mobile-ui .title-wordmark{top:12%;left:5%;font-size:43px;width:43%}
+ .mobile-ui .start-card{right:4%;left:auto;top:50%;bottom:auto;transform:translateY(-50%);width:320px;padding:18px}
+ .mobile-ui .start-card h1{font-size:24px;margin:12px 0}
+ .mobile-ui .start-card p{font-size:12px;margin:10px 0}
+}
