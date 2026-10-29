@@ -9,7 +9,7 @@ export class Features{
  init(){this.pics=productPictures();}
  img(kind){return `<img src="${this.pics?.[kind]||this.pics?.phone||''}" alt="3D-модель товара" draggable="false">`;}
  allowed(action){const s=this.state(),w=this.world();if(w.busy||w.repairBusy||w.shoppingBusy)return false;
-  if(['start','saveTransfer','exportSave','downloadSave','copySave','importSave'].includes(action))return true;
+  if(['start','redeemCode','activateCode','saveTransfer','exportSave','downloadSave','copySave','importSave'].includes(action))return true;
   if(!s.profile.created)return ['start','storyNext','gender','perk','profileDone','profileName','sound'].includes(action);
   const t=training(s);if(!t)return true;
   if(['close','backdrop','pause','askReset','reset','sound','credits','toolFromTable','trainingMove','finishBenchTest'].includes(action))return true;
