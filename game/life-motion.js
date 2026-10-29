@@ -1,6 +1,6 @@
 import * as T from 'three';
 import {product} from './products.js';
-import {animateCharacter} from './characters.js';
+import {animateCharacter,setEyesClosed} from './characters.js';
 import {ease,keys,reachArm} from './motion.js';
 export function installLifeMotion(w){
  w.performLife=(kind,done,item=null,options={})=>{
@@ -13,7 +13,7 @@ export function installLifeMotion(w){
  w.updateLife=(dt,t)=>{
   const a=w.lifeAction;if(!a)return;a.time+=dt;const u=Math.min(1,a.time/a.duration),actor=a.actor,cap=document.getElementById('life-caption');const play=(key,at,sound)=>{if(u>=at&&!a.sounds.has(key)){a.sounds.add(key);w.onAction('foley',sound)}};
   if(a.kind==='sleep'){
-   const blend=keys(u,[[0,0],[.22,1],[.84,1],[1,0]]);actor.position.lerpVectors(a.start,new T.Vector3(-1.3,.72,.35),blend);actor.quaternion.slerpQuaternions(a.q,new T.Quaternion().setFromEuler(new T.Euler(-Math.PI/2,0,0)),blend);actor.legs.forEach(l=>l.rotation.x=0);actor.knees.forEach(l=>l.rotation.x=0);actor.arms.forEach((l,i)=>{l.rotation.set(-.06,0,i?-.12:.12);actor.elbows[i].rotation.x=-.25});actor.eyes.forEach(e=>e.scale.y=.10);
+   const blend=keys(u,[[0,0],[.22,1],[.84,1],[1,0]]);actor.position.lerpVectors(a.start,new T.Vector3(-1.3,.72,.35),blend);actor.quaternion.slerpQuaternions(a.q,new T.Quaternion().setFromEuler(new T.Euler(-Math.PI/2,0,0)),blend);actor.legs.forEach(l=>l.rotation.x=0);actor.knees.forEach(l=>l.rotation.x=0);actor.arms.forEach((l,i)=>{l.rotation.set(-.06,0,i?-.12:.12);actor.elbows[i].rotation.x=-.25});setEyesClosed(actor,true);
    const phase=u<.22?'Устраиваемся поудобнее…':u<.43?'19:30 · Вечер':u<.70?'01:10 · Ночь':u<.87?'05:40 · Рассвет':'09:00 · Новое утро';cap.textContent=phase;if(u>.22)w.onAction('clockPreview',phase.split(' · ')[0]);const darkness=keys(u,[[0,0],[.27,0],[.52,1],[.70,1],[.95,0],[1,0]]);document.getElementById('sleep-shade').style.opacity=darkness*.68;
    for(const l of w.environmentLights||[]){if(l.scene===w.homeScene||l.scene===w.scene){l.sun.intensity=3.2-darkness*2.8;l.sun.color.lerp(new T.Color(darkness>.5?'#93a8d8':'#fff1ce'),Math.min(1,dt*5))}}
   }else if(a.kind==='rest'){
@@ -23,7 +23,7 @@ export function installLifeMotion(w){
    if(a.kind==='eat'||a.kind==='drink'){
     const lift=keys(u,[[0,0],[.18,1],[.40,1],[.50,.72],[.64,1],[.80,1],[1,0]]);const rest=new T.Vector3(.25,.72,.10),mouth=new T.Vector3(a.kind==='drink'?.06:.10,a.kind==='drink'?1.24:1.22,a.kind==='drink'?.34:.22);const hand=rest.lerp(mouth,lift);target=hand.toArray();left=[-.14,.84+lift*.24,.24];const chew=u>.2&&u<.82?Math.sin(t*(a.kind==='eat'?11:6))*.018:0;actor.head.rotation.x=.06*lift+chew;actor.mouth.scale.y=1+Math.max(0,Math.sin(t*11))*.10*lift;propQ.setFromEuler(new T.Euler(a.kind==='drink'?-.85*lift:Math.sin(t*4)*.08,0,0));cap.textContent=a.kind==='drink'?'Пьём…':'Перекус';play('first',.22,a.kind);play('second',.65,a.kind);
    }else if(a.kind==='record'){
-    const lift=keys(u,[[0,0],[.20,1],[.83,1],[1,0]]);target=[.39,.80+.40*lift,.15+.20*lift];left=[-.22-.1*Math.sin(t*3)*lift,1.02+Math.sin(t*4)*.15*lift,.30];actor.head.rotation.y=-.09*lift;actor.head.rotation.z=Math.sin(t*2)*.035*lift;actor.mouth.scale.y=1+Math.max(0,Math.sin(t*15))*.4*lift;const timer=document.querySelector('#recording-viewfinder span');if(timer)timer.textContent='00:'+String(Math.floor(a.time)).padStart(2,'0');propQ.setFromAxisAngle(new T.Vector3(1,0,0),-Math.PI/2*lift);cap.textContent='Запись в Youpube';play('record',.2,'scan');play('stop',.9,'scan');
+    const lift=keys(u,[[0,0],[.20,1],[.83,1],[1,0]]);target=[.39,.80+.40*lift,.15+.20*lift];left=[-.22-.1*Math.sin(t*3)*lift,1.02+Math.sin(t*4)*.15*lift,.30];actor.head.rotation.y=-.09*lift;actor.head.rotation.z=Math.sin(t*2)*.035*lift;actor.mouth.scale.y=1+Math.max(0,Math.sin(t*15))*.4*lift;const timer=document.querySelector('#recording-viewfinder span');if(timer)timer.textContent='00:'+String(Math.floor(a.time)).padStart(2,'0');propQ.setFromAxisAngle(new T.Vector3(1,0,0),-Math.PI/2*lift);cap.textContent='Запись в YouTech';play('record',.2,'scan');play('stop',.9,'scan');
    }else if(a.kind==='shop'||a.kind==='salvage'){
     const lift=keys(u,[[0,0],[.28,1],[.65,1],[1,0]]);target=[.22,.7+.3*lift,.1+.25*lift];cap.textContent=a.kind==='shop'?'В корзину':'Осматриваем находку';play('pick',.35,'parcel');
    }else if(a.kind==='parcelLift'||a.kind==='parcelGive'){
@@ -43,6 +43,6 @@ export function installLifeMotion(w){
     if(a.kind==='work'){const start=new T.Vector3(w.mode==='grocery'?-2.16:-.9,1.15,.24),end=start.clone().add(new T.Vector3(.4,.08,.2)),p=start.clone().lerp(end,ease(u));p.y+=Math.sin(u*Math.PI)*.12;a.prop.position.copy(actor.worldToLocal(p));}
    }
   }
-  if(u===1){if(a.kind==='record'){document.getElementById('recording-viewfinder')?.remove();w.targetFocus.copy(a.focus);w.targetView=a.view;}if(a.prop){a.prop.removeFromParent();a.prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();if(o.material.map)o.material.map.dispose();o.material.dispose()}})}actor.position.copy(a.start);actor.quaternion.copy(a.q);actor.head.rotation.set(0,0,0);actor.arms.forEach(o=>o.rotation.z=0);document.getElementById('sleep-shade').style.opacity=0;cap.classList.remove('show');w.lifeAction=null;w.busy=false;a.done?.();}
+  if(u===1){if(a.kind==='sleep')setEyesClosed(actor,false);if(a.kind==='record'){document.getElementById('recording-viewfinder')?.remove();w.targetFocus.copy(a.focus);w.targetView=a.view;}if(a.prop){a.prop.removeFromParent();a.prop.traverse(o=>{if(o.isMesh){o.geometry.dispose();if(o.material.map)o.material.map.dispose();o.material.dispose()}})}actor.position.copy(a.start);actor.quaternion.copy(a.q);actor.head.rotation.set(0,0,0);actor.arms.forEach(o=>o.rotation.z=0);document.getElementById('sleep-shade').style.opacity=0;cap.classList.remove('show');w.lifeAction=null;w.busy=false;a.done?.();}
  };
 }

@@ -16,7 +16,14 @@ export function offers(s){return [
  {id:`${s.day}-music`,name:'JBL Flip 6 · без зарядки',kind:'speaker',price:700,defect:'charge',seller:'Артём',rating:'4,4',reviews:19,honest:true,description:'Звук громкий, зарядку не берёт. Отдам под восстановление.',condition:'Плата и динамик исправны. Разъём зарядки повреждён.'},
  {id:`${s.day}-ears`,name:'Soundcore Q20i · быстро садятся',kind:'headphones',price:450,defect:'battery',seller:'Алина',rating:'4,9',reviews:74,honest:true,description:'Амбушюры новые. Через десять минут просят зарядку.',condition:'Динамики исправны. Изношен аккумулятор.'}
  ,...(s.training?.complete?[{id:`${s.day}-quick`,name:'8BitDo Micro · батарея',kind:'gamepad',difficulty:'quick',price:350,resale:1700,defect:'battery',seller:'Никита',rating:'4,8',reviews:32,honest:true,description:'Простой корпус. Держится на трёх винтах.',condition:'Быстрый ремонт: один разъём, замена батареи.'},{id:`${s.day}-realme`,name:'realme GT Neo 6 · слабая батарея',price:1250,defect:'battery',seller:'Олег',rating:'4,7',reviews:42,honest:true,description:'Android, 256 ГБ. Быстро садится, остальное исправно.',condition:'Батарея изношена, родной AMOLED работает.'},...(s.day>=3?[{id:`${s.day}-water`,name:'iQOO Neo 10 · после дождя',difficulty:'advanced',price:1350,resale:4900,defect:'charge',seller:'Вера',rating:'4,9',reviews:87,honest:true,description:'Попал под дождь. Не заряжается. Нужна очистка и аккуратное вскрытие.',condition:'Сложный ремонт: прогрев клея, очистка, новая герметизация и калибровка.'}]:[]),...(s.day>=7?[{id:`${s.day}-board`,name:'iPhone 13 Pro · двойная неисправность',difficulty:'expert',price:1800,resale:7200,defect:'battery',requiredParts:['battery','charge'],seller:'Сервис Стаса',rating:'4,6',reviews:148,honest:true,description:'Батарея и цепь зарядки повреждены. Для мастера с опытом.',condition:'Экспертный ремонт: две детали, пайка контактов, калибровка.'}]:[])]:[])
- ].filter(o=>!s.bought.includes(o.id)).map(o=>({...o,price:Math.round(o.price*(s.profile?.perk==='savvy'?.92:1))}));}
+ ].filter(o=>!s.bought.includes(o.id)).map(o=>{
+ // Derive variation from the day and stable listing ID, never its filtered index.
+ if(s.training?.complete&&!o.donor&&(!o.kind||o.kind==='phone')&&!o.difficulty){
+  const model=['neo','realme','mini','neo','pro','realme'][(s.day+o.id.charCodeAt(o.id.length-1))%6];
+  const names={neo:'iQOO Neo 10',realme:'realme GT Neo 6',mini:'iPhone 13 mini',pro:'iPhone 13 Pro'};
+  o={...o,model,name:o.name.replace('iPhone 13 mini',names[model]),price:o.price+((s.day*17+o.id.charCodeAt(o.id.length-1))%5)*50};
+ }
+ return {...o,price:Math.round(o.price*(s.profile?.perk==='savvy'?.92:1))};});}
 export const repairStage=stageFor;
 export function money(n){return Math.round(n).toLocaleString('ru-RU')+' ₽';}
 export function time(s){return `${String(Math.floor(s.time/60)%24).padStart(2,'0')}:${String(Math.floor(s.time%60)).padStart(2,'0')}`;}

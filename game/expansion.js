@@ -16,7 +16,7 @@ export class Expansion{
   if(action==='map'){this.open('map');return true}
   if(action==='nav'){this.close();if(id==='park')this.handle('park');else this.walk(id);return true}
   if(action==='park'){
-   this.close();const go=()=>w.walkTo([21.5,.05,2.35],async()=>{await w.transitionTo('park');s.stats.parkVisits++;this.tick(8,1);this.persist()});if(w.mode!=='street')w.transitionTo('street').then(go);else go();return true;
+   this.close();const go=()=>w.walkTo([29.5,.05,2.35],async()=>{await w.transitionTo('park');s.stats.parkVisits++;this.tick(8,1);this.persist()});if(w.mode!=='street')w.transitionTo('street').then(go);else go();return true;
   }
   if(action==='parkExit'){this.close();w.transitionTo('street').then(()=>this.persist());return true}
   if(action==='salvage'){

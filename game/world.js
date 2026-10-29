@@ -14,7 +14,7 @@ import {installLifeMotion} from './life-motion.js';
 export class World{
  constructor(canvas,onAction){
   this.canvas=canvas;this.onAction=onAction;this.mode='room';this.callbacks=[];this.ray=new T.Raycaster();this.pointer=new T.Vector2();this.avatarGoal=null;this.keys={};this.stage=null;
-  this.renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.15;
+  this.renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.autoUpdate=!window.__captureMode;this.renderer.shadowMap.needsUpdate=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.15;
   this.scene=new T.Scene();this.scene.background=new T.Color('#c8d9d4');this.scene.fog=new T.Fog('#c8d9d4',28,65);this.homeScene=new T.Scene();this.homeScene.background=new T.Color('#d5dfd5');this.repairScene=new T.Scene();this.repairScene.background=new T.Color('#3a655e');
   this.camera=new T.OrthographicCamera(-5,5,5,-5,.05,100);this.camera.position.set(6,6,8);this.focus=new T.Vector3(0,.65,0);this.camera.lookAt(this.focus);this.targetFocus=this.focus.clone();this.view=7;this.targetView=7;
   this.light(this.scene);this.light(this.homeScene);this.light(this.repairScene);this.particles=[];this.gestures=[];this.assets={};this.hotspots=[];this.repairTargets=[];
@@ -154,6 +154,7 @@ export class World{
   // Opt-in offline renderer: advance the real simulation exactly once per video frame.
   // Normal play always uses requestAnimationFrame and its measured delta.
   if(window.__captureMode)window.__captureFrame=()=>this.animate();else requestAnimationFrame(()=>this.animate());
+  if(this.orientationPaused){this.clock.getDelta();this.onFrame?.();return;}
   const dt=window.__captureMode?1/(window.__captureFps||60):Math.min(this.clock.getDelta(),.25),t=window.__captureMode?(this.captureTime=(this.captureTime||0)+dt):this.clock.elapsedTime;
   if(window.__captureMode){this.clock.elapsedTime=t;window.__captureTime=t;if(window.__captureCamera){this.targetFocus.fromArray(window.__captureCamera.focus);this.targetView=window.__captureCamera.view;}}
 
@@ -171,6 +172,8 @@ export class World{
   if(this.homeDoor)this.homeDoor.rotation.y=T.MathUtils.lerp(this.homeDoor.rotation.y,performance.now()<(this.homeDoor.userData.openUntil||0)?-1.1:0,dt*6);
   for(const p of this.particles){p.life-=dt;p.mesh.position.addScaledVector(p.v,dt);p.v.y-=dt*1.7;p.mesh.material.opacity=Math.max(0,p.life);if(p.life<=0){p.mesh.removeFromParent();p.mesh.geometry.dispose();p.mesh.material.dispose()}}this.particles=this.particles.filter(p=>p.life>0);
   for(const g of this.gestures){g.time+=dt;const u=Math.min(1,g.time/g.duration);if(g.discard){g.obj.position.lerpVectors(g.from,g.to,u);g.obj.position.y+=Math.sin(u*Math.PI)*.5;g.obj.rotation.z=u*1.3;if(u===1)g.obj.removeFromParent()}else{const v=Math.sin(u*Math.PI);g.obj.position.lerpVectors(g.from,g.to,v);g.obj.rotation.z=g.rotation.z+v*.6;if(u===1)g.obj.rotation.copy(g.rotation)}}this.gestures=this.gestures.filter(g=>g.time<g.duration);
+  // Offline capture reuses shadow maps between updates; geometry still renders every frame.
+  if(window.__captureMode&&this.captureShadowTick!==Math.floor(t*6)){this.captureShadowTick=Math.floor(t*6);this.renderer.shadowMap.needsUpdate=true;}
   this.updateClimate?.(dt);this.onSimulate?.(dt);if(!window.__captureSkipRender&&(window.__captureMode||!this.precisionUI||t-(this.lastDraw||0)>.10)){this.renderer.render(this.scenes?.[this.mode]||this.scene,this.camera);this.lastDraw=t}this.onFrame?.();
  }
 }

@@ -3,7 +3,7 @@ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export class MobileUI {
  constructor(root,context){
-  this.root=root;this.context=context;this.query=matchMedia('(max-width:700px), (pointer:coarse) and (max-height:600px)');
+  this.root=root;this.context=context;this.rotation=document.createElement('div');this.rotation.id='rotate-device';this.rotation.hidden=true;this.rotation.setAttribute('role','alert');this.rotation.innerHTML='<p>Поверните телефон вертикально</p><small>Игра приостановлена. Прогресс сохранён.</small>';root.append(this.rotation);this.query=matchMedia('(max-width:700px), (pointer:coarse) and (max-height:600px)');
   this.toast=document.getElementById('toast');this.life=document.getElementById('life-caption');this.sizes=new WeakMap();this.positions=new Map();
   this.worldView=document.createElement('div');this.worldView.id='world-view';
   for(const id of ['scene','vignette','hotspots','action-shield']){const el=id==='vignette'?root.querySelector('.vignette'):document.getElementById(id);if(el)this.worldView.append(el);}
@@ -12,11 +12,16 @@ export class MobileUI {
   this.header=document.createElement('header');this.header.id='touch-header';this.hints=document.createElement('div');this.hints.id='touch-hints';
   this.notices=document.createElement('div');this.notices.id='touch-notices';this.header.append(this.hints);root.append(this.header,this.notices);
   this.primary=document.createElement('div');this.primary.id='touch-repair-action';
-  this.resize=()=>{const vv=window.visualViewport;root.style.setProperty('--app-height',((!vv||vv.scale>1.05)?innerHeight:vv.height)+'px');this.sizes=new WeakMap();this.positions.clear();this.update();this.context().world?.resize();};
+  this.resize=()=>{const vv=window.visualViewport;root.style.setProperty('--app-height',((!vv||vv.scale>1.05)?innerHeight:vv.height)+'px');this.sizes=new WeakMap();this.positions.clear();this.update();this.checkOrientation();this.context().world?.resize();};
   this.query.addEventListener('change',this.resize);window.addEventListener('resize',this.resize);window.visualViewport?.addEventListener('resize',this.resize);
   new ResizeObserver(()=>{this.sizes=new WeakMap();this.positions.clear();this.context().world?.resize();}).observe(this.worldView);
   document.fonts.ready.then(()=>{this.sizes=new WeakMap();});
   this.resize();
+ }
+ checkOrientation(){
+  const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)||document.activeElement?.isContentEditable;
+  const paused=this.active&&matchMedia('(pointer:coarse)').matches&&innerWidth>innerHeight&&!editing;
+  this.rotation.hidden=!paused;const w=this.context().world;if(w){w.orientationPaused=paused;if(paused)w.keys={};}
  }
  get active(){return this.query.matches;}
  update(){
@@ -56,7 +61,7 @@ export class MobileUI {
   if(w.mode==='repair')return targets.filter(t=>t.small||t.connector);
   const near=(t,d)=>!t.position||Math.hypot(t.position.x-w.avatar.position.x,t.position.z-w.avatar.position.z)<d;
   if(w.mode==='room')return targets.filter(t=>t.id!=='bench'&&(!['myHouse','story-board','sofa'].includes(t.id)||near(t,1.75)));
-  if(w.mode==='street')return targets.filter(t=>t.action!=='friend'||near(t,2.8));
+  if(w.mode==='street')return targets.filter(t=>t.action!=='friend'||near(t,1.8)).sort((a,b)=>Number(b.action!=='friend')-Number(a.action!=='friend')).slice(0,6);
   return targets;
  }
  placeTargets(targets,container){
@@ -84,5 +89,5 @@ export class MobileUI {
   }
   const markup=lines.join('');if(this.linkMarkup!==markup){this.links.innerHTML=markup;this.linkMarkup=markup;}return true;
  }
- frame(){if(this.active){this.notices.classList.toggle('has-toast',this.toast.classList.contains('show'));if(this.context().world?.mode==='repair')this.repairAction();}}
+ frame(){this.checkOrientation();if(this.active){this.notices.classList.toggle('has-toast',this.toast.classList.contains('show'));if(this.context().world?.mode==='repair')this.repairAction();}}
 }

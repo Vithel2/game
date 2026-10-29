@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'game/**'
+      - 'tests/**'
       - 'web/**'
       - 'tools/**'
       - 'android-app/**'
@@ -50,7 +51,7 @@ jobs:
       - run: npm ci
 
       - name: Run tests
-        run: npm run test:release8 && npm run test:state
+        run: npm run test:release8 && npm run test:state && npm run test:release12
 
       - run: npm run prepare:android
 
@@ -66,7 +67,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Perekup-0.11-test-APK
+          name: Perekup-0.12-test-APK
           path: android-app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
@@ -113,6 +114,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Perekup-0.11-store-APK
+          name: Perekup-0.12-store-APK
           path: android-app/platforms/android/app/build/outputs/apk/release/app-release.apk
           if-no-files-found: ignore

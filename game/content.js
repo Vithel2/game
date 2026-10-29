@@ -14,21 +14,24 @@ export const QUESTS=[
  {id:'donor-repair',title:'Донор спас положение',who:'Лев · сосед-мастер',text:'Восстанови телефон с разбитым дисплеем. В Azon дисплеев нет — придётся найти донора.',reward:500,ready:s=>s.phones.some(p=>p.sold&&p.defect==='display')},
  {id:'master',title:'У района появился мастер',who:'Жители района',text:'Продай три восстановленных телефона и заслужи репутацию надёжного продавца.',reward:700,ready:s=>s.sold>=3&&s.reputation>=59},
  {id:'neighbor',title:'Соседи советуют соседям',who:'Жители района',text:'Верни жителю района его отремонтированный телефон.',reward:250,ready:s=>s.stats.jobsCompleted>0},
- {id:'first-vlog',title:'Возвращение в кадр',who:'Лиза · автор Youpube',text:'Сними и опубликуй первый влог в приложении Youpube.',reward:200,ready:s=>s.vlog.posts.length>0},
+ {id:'first-vlog',title:'Возвращение в кадр',who:'Лиза · автор YouTech',text:'Сними и опубликуй первый влог в приложении YouTech.',reward:200,ready:s=>s.vlog.posts.length>0},
  {id:'local-friends',title:'Район — это люди',who:'Лев · сосед-мастер',text:'Познакомься со всеми тремя друзьями: Львом, Денисом и Лизой.',reward:250,ready:s=>Object.values(s.friends).every(n=>n>0)},
  {id:'gadget-repair',title:'В мастерской не только телефоны',who:'Денис · любитель железа',text:'Восстанови и продай геймпад, колонку или наушники с Авиту.',reward:350,ready:s=>s.phones.some(p=>p.kind&&p.kind!=='phone'&&p.fixed&&p.sold&&!p.client)},
- {id:'channel-income',title:'Творчество кормит',who:'Лиза · автор Youpube',text:'Подключи монетизацию: нужны 500 подписчиков и три публикации.',reward:500,ready:s=>s.vlog.monetized},
+ {id:'channel-income',title:'Творчество кормит',who:'Лиза · автор YouTech',text:'Подключи монетизацию: нужны 500 подписчиков и три публикации.',reward:500,ready:s=>s.vlog.monetized},
 ];
 export const JOBS=[
  {id:'tamara',name:'Тамара',title:'Касса без связи',text:'Мой личный телефон выключается без зарядки. После смены хочу позвонить дочке — выручишь?',defect:'battery',location:'grocery',pay:1500,bonus:250,days:3},
  {id:'masha',name:'Маша',title:'Уведомления не приходят',text:'Телефон для связи с курьерами перестал заряжаться. Только не потеряй данные: там вся моя смена.',defect:'charge',location:'pickup',pay:1800,bonus:400,days:5},
  {id:'lev',name:'Лев',title:'Экран для старого друга',text:'Плата живая, дисплей после падения умер. Найди хороший донор — лишние детали потом пригодятся.',defect:'display',location:'room',pay:2200,bonus:350,days:4}
 ];
-export function dailyQuests(s){return [
+export function dailyQuests(s){const quests=[
  {id:`daily-${s.day}-inspect`,title:'Присмотреться к товару',text:'Осмотри один телефон на встрече сегодня.',reward:80,ready:s=>s.daily.inspections>0},
  {id:`daily-${s.day}-food`,title:'Не работать голодным',text:'Купи продукты в магазине сегодня.',reward:60,ready:s=>s.daily.foodBuys>0},
- {id:`daily-${s.day}-sale`,title:'Один день — одна сделка',text:'Продай восстановленный телефон сегодня.',reward:120,ready:s=>s.daily.sold>0}
-];}
+ {id:`daily-${s.day}-sale`,title:'Один день — одна сделка',text:'Продай восстановленный телефон сегодня.',reward:120,ready:s=>s.daily.sold>0},
+ {id:`daily-${s.day}-explore`,title:'Прогулка по району',text:'Осмотри находку в сквере сегодня.',reward:70,ready:s=>s.lastSalvageDay===s.day},
+ {id:`daily-${s.day}-rest`,title:'Не забыть о себе',text:'Отдохни дома сегодня.',reward:60,ready:s=>s.lastRestDay===s.day},
+ {id:`daily-${s.day}-video`,title:'Новости мастерской',text:'Опубликуй новый ролик сегодня.',reward:100,ready:s=>s.vlog.lastDay===s.day}
+ ];return [quests[0],quests[1+s.day%2],quests[3+s.day%3]];}
 export const PC_UPGRADES={
  ram:{title:'Оперативная память',prices:[700,1400],tiers:['4 ГБ','8 ГБ','16 ГБ'],benefit:'Больше времени в «Ночном курьере»: +10 секунд за уровень.'},
  gpu:{title:'Видеокарта',prices:[1400,2600],tiers:['Встроенная','Pixel G1','Pixel G2'],benefit:'Множитель очков в игре: ×1 / ×1,25 / ×1,5.'},

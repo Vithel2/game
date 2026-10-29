@@ -2,7 +2,7 @@ Unicode true
 !include "MUI2.nsh"
 !include "x64.nsh"
 !ifndef VERSION
- !define VERSION "0.11.0"
+ !define VERSION "0.12.0"
 !endif
 Name "Перекуп: второй шанс"
 OutFile "${OUTPUT}"

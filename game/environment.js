@@ -5,15 +5,14 @@ import {seasonFor,skyPhase} from './progression.js';
 export function installEnvironment(w){
  const add=(parent,size,pos,color)=>{const o=w.box(...size,color);o.position.set(...pos);o.castShadow=o.receiveShadow=true;parent.add(o);return o};
  const landscape=new T.Group();w.scene.add(landscape);w.cityDecor=landscape;
- add(landscape,[11,.10,3.3],[20,-.10,2.7],'#c9cfc4');add(landscape,[12,.10,2.4],[20,-.15,5.3],'#667778');
- for(const x of[18,21,24])add(landscape,[1.3,.008,.08],[x,-.09,5.3],'#eee8d2');
+ add(landscape,[19,.10,3.3],[24,-.10,2.7],'#c9cfc4');add(landscape,[20,.10,2.4],[24,-.15,5.3],'#667778');
+ for(const x of[18,21,24,27,30])add(landscape,[1.3,.008,.08],[x,-.09,5.3],'#eee8d2');
  for(const [x,height,color]of[[18,5.4,'#b5b2a2'],[23,7,'#9eafb1'],[28,5.8,'#b1bca5']]){
   add(landscape,[3.5,height,3],[x,height/2,-4.6],color);add(landscape,[3.7,.15,3.2],[x,height,-4.6],'#637a75');
   for(let y=1;y<height-.3;y+=1.15)for(const dx of[-1,0,1])add(landscape,[.55,.65,.03],[x+dx,y,-3.08],'#b9ced0');
  }
  add(landscape,[1.8,.10,.45],[18.4,.5,3.9],'#b88f65');for(const x of[17.8,19])add(landscape,[.06,.46,.35],[x,.24,3.9],'#54716b');
- for(const x of[17.4,19.5])add(landscape,[.06,2.4,.06],[x,1.2,4.25],'#5d7473');
- const label=makeSign('СКВЕР',1.1,.36,'#e3ecd2','#3d6252');label.position.set(21.5,2.05,1.4);w.scene.add(label);for(const x of[20.9,22.1])add(landscape,[.07,1.8,.07],[x,.9,1.4],'#6c8064');
+ const label=makeSign('СКВЕР',1.1,.36,'#e3ecd2','#3d6252');label.position.set(29.5,2.05,1.4);w.scene.add(label);for(const x of[28.7,30.3]){add(landscape,[.6,.35,.6],[x,.175,1.4],'#92775b');for(const y of[.55,1,1.45,1.85]){const leaf=new T.Mesh(new T.DodecahedronGeometry(.37,1),new T.MeshStandardMaterial({color:'#729c68'}));leaf.position.set(x,y,1.4);landscape.add(leaf)}}
  // The living room shares a real, walkable floor with the original workshop.
  const living=new T.Group();w.livingRoom=living;w.homeScene.add(living);add(living,[3.8,.18,3.5],[3.85,-.07,0],'#ad9478');
  for(let z=-1.35;z<1.4;z+=.89)for(let x=2.1;x<5.6;x+=.35)add(living,[.34,.025,.88],[x,.033,z],'#c2a583');
@@ -31,7 +30,7 @@ export function installEnvironment(w){
  const crate=add(park,[.58,.42,.48],[-2.4,.24,-2.15],'#ac8b63');add(park,[.6,.05,.5],[-2.4,.48,-2.15],'#ccb389');w.salvageCrate=crate;
  for(const z of[-3.35,3.35])for(let x=-4.3;x<4.4;x+=.45)if(!(z>0&&x>-.7&&x<.8))add(park,[.08,.5,.08],[x,.25,z],'#8c9a82');
  w.parkGround.removeFromParent();w.pond.removeFromParent();batchStatic(park);w.parkScene.add(w.parkGround,w.pond);batchStatic(landscape);
- const oldZone=w.setZone.bind(w);w.setZone=(zone,instant=false,spawn=null)=>{const prev=w.mode;oldZone(zone,instant,zone==='street'&&prev==='park'?[21.5,.05,2.35]:spawn);if(zone==='room'){w.targetFocus.set(1.5,.75,0);w.targetView=7.2}if(zone==='street'){w.targetFocus.set(T.MathUtils.clamp(w.avatar.position.x+2.7,2,21),.9,1);w.targetView=10.5}if(zone==='park'){w.avatar.position.set(0,.05,2.7);w.targetFocus.set(0,.7,0);w.targetView=8.3}if(instant)w.focus.copy(w.targetFocus)};
+ const oldZone=w.setZone.bind(w);w.setZone=(zone,instant=false,spawn=null)=>{const prev=w.mode;oldZone(zone,instant,zone==='street'&&prev==='park'?[29.5,.05,2.35]:spawn);if(zone==='room'){w.targetFocus.set(1.5,.75,0);w.targetView=7.2}if(zone==='street'){w.targetFocus.set(T.MathUtils.clamp(w.avatar.position.x+2.7,2,29),.9,1);w.targetView=10.5}if(zone==='park'){w.avatar.position.set(0,.05,2.7);w.targetFocus.set(0,.7,0);w.targetView=8.3}if(instant)w.focus.copy(w.targetFocus)};
  w.snowRoofs=[];for(const [x,z,width,depth]of[[6.7,-.6,6.05,3.30],[12.1,-.6,3.43,3.23]]){const roof=add(w.scene,[width,.035,depth],[x,3.09,z],'#e5eeed');roof.visible=false;w.snowRoofs.push(roof)}
  const roofShape=w.houseExterior.children.find(o=>o.isMesh&&o.geometry.attributes.position.count===6);if(roofShape){const snow=new T.Mesh(roofShape.geometry.clone(),new T.MeshStandardMaterial({color:'#e5eeed',roughness:1}));snow.position.y=.025;snow.visible=false;w.houseExterior.add(snow);w.snowRoofs.push(snow)}
  w.windowMats=[];w.scene.traverse(o=>{if(o.isMesh&&o.material?.color&&['b9ced0','d8cdae','829fa4'].includes(o.material.color.getHexString())&&!w.windowMats.includes(o.material)){o.material.emissive.set('#edc58c');w.windowMats.push(o.material)}});
@@ -40,13 +39,13 @@ export function installEnvironment(w){
  w.lampGlows=[];for(const x of[3.1,12,20]){const lamp=new T.PointLight('#ffdcb0',0,6,1.5);lamp.position.set(x,2.4,3.2);w.scene.add(lamp);w.lampGlows.push(lamp)}
  w.updateClimate=(dt)=>{
   const s=w.gameState;if(!s)return;const season=seasonFor(s.day),phase=skyPhase(s.time),outdoors=w.mode==='street'||w.mode==='park';w.climate={season:season.id,seasonName:season.name,phase:phase.name,dark:phase.dark};
-  if(w.mode==='street'&&w.lifeAction?.kind!=='record'){w.targetFocus.x=T.MathUtils.clamp(w.avatar.position.x+2.7,2,21);w.targetFocus.z=1;}
+  if(w.mode==='street'&&w.lifeAction?.kind!=='record'){w.targetFocus.x=T.MathUtils.clamp(w.avatar.position.x+2.7,2,29);w.targetFocus.z=1;}
   if(w.mode==='room'&&w.lifeAction?.kind!=='record'){const max=w.roomExtent||2.2;w.targetFocus.set((max-2.2)/2,1.0,0);}
   if(w.mode==='room'&&!w.lifeAction){const level=s.house?.level||0;w.targetView=level>=2?8.3:level===0?6.6:7.2;}const alpha=1-Math.exp(-dt*2.5);if(w.lifeAction?.kind!=='sleep')for(const l of w.environmentLights){const outdoor=l.scene===w.scene||l.scene===w.parkScene;if(l.scene===w.repairScene)continue;const sky=new T.Color(phase.sky||season.sky);if(l.scene.background)l.scene.background.lerp(outdoor?sky:new T.Color(phase.dark>.6?'#9fadaf':'#d5dfd5'),alpha);if(l.scene.fog)l.scene.fog.color.copy(l.scene.background);if(l.sun){l.sun.intensity=T.MathUtils.lerp(l.sun.intensity,outdoor?3.2-phase.dark*2.95:2.8-phase.dark*1.25,alpha);l.sun.color.lerp(new T.Color(phase.sun),alpha)}if(l.hemi)l.hemi.intensity=outdoor?2.3-phase.dark*1.6:2.3-phase.dark*.45;}
   for(const crown of w.sway)crown.material.color.lerp(new T.Color(season.leaf),alpha);w.floor.material.color.lerp(new T.Color(season.ground),alpha);w.parkGround.material.color.lerp(new T.Color(season.ground),alpha);for(const lamp of w.lampGlows)lamp.intensity=phase.dark*3;
   for(const roof of w.snowRoofs)roof.visible=season.id==='winter'&&!(roof.parent===w.houseExterior&&s.house?.level>=2);for(const material of w.windowMats)material.emissiveIntensity=phase.dark*.45;w.snow.visible=w.snowPark.visible=season.id==='winter';if(season.id==='winter'){for(const cloud of[w.snow,w.snowPark]){const a=cloud.geometry.attributes.position;for(let i=0;i<a.count;i++){a.array[i*3+1]-=dt*.65;a.array[i*3]+=dt*.12;if(a.array[i*3+1]<0)a.array[i*3+1]=7}a.needsUpdate=true}}w.pond.material.color.lerp(new T.Color(season.id==='winter'?'#b4d6dd':'#74a9b2'),alpha);w.pond.position.y=.105+Math.sin(w.clock.elapsedTime*.7)*.003;
  };
- w.extraTargets=()=>w.mode==='room'&&w.gameState?.house?.level>0?[{id:'sofa',label:'Отдохнуть',position:new T.Vector3(4,1.35,-.8),action:'sofa'},{id:'story-board',label:'Моя история',position:new T.Vector3(5.3,1.9,-1.0),action:'story'}]:w.mode==='street'?[{id:'park',label:'Сквер',position:new T.Vector3(21.5,2.3,1.4),action:'park'}]:w.mode==='park'?[{id:'parkExit',label:'В район',position:new T.Vector3(0,.7,2.8),action:'parkExit'},{id:'salvage',label:'Старая техника',position:new T.Vector3(-2.4,1.15,-2.15),action:'salvage'},{id:'parkRest',label:'Посидеть',position:new T.Vector3(-2.8,1.4,-.3),action:'parkRest'}]:[];
+ w.extraTargets=()=>w.mode==='room'&&w.gameState?.house?.level>0?[{id:'sofa',label:'Отдохнуть',position:new T.Vector3(4,1.35,-.8),action:'sofa'},{id:'story-board',label:'Моя история',position:new T.Vector3(5.3,1.9,-1.0),action:'story'}]:w.mode==='street'?[{id:'park',label:'Сквер',position:new T.Vector3(29.5,2.3,1.4),action:'park'}]:w.mode==='park'?[{id:'parkExit',label:'В район',position:new T.Vector3(0,.7,2.8),action:'parkExit'},{id:'salvage',label:'Старая техника',position:new T.Vector3(-2.4,1.15,-2.15),action:'salvage'},{id:'parkRest',label:'Посидеть',position:new T.Vector3(-2.8,1.4,-.3),action:'parkRest'}]:[];
 }
 export function makeSign(text,width=1.4,height=.35,bg='#f2ecd9',ink='#3b5552'){
  const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,512,128);x.fillStyle=ink;x.font='900 62px Nunito,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(text,256,65,490);const texture=new T.CanvasTexture(c);texture.colorSpace=T.SRGBColorSpace;return new T.Mesh(new T.PlaneGeometry(width,height),new T.MeshBasicMaterial({map:texture}));
